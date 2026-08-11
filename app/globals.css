@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Himalayan Feeds — design system
+   Palette: agricultural orange + green on warm cream, one dark neutral
+------------------------------------------------------------------ */
+@theme {
+  --color-cream: #FBF6EE;
+  --color-cream-deep: #F3E9D9;
+  --color-ink: #2A2724;
+  --color-ink-soft: #55504A;
+
+  --color-orange: #E8722A;
+  --color-orange-dark: #C85A18;
+  --color-orange-light: #FBEBDD;
+
+  --color-leaf: #6FA33F;
+  --color-leaf-dark: #4E7A28;
+  --color-leaf-light: #EBF2E0;
+
+  --color-gold: #C79A3B;
+
+  --color-terracotta: #B14D17;
+  --color-terracotta-dark: #92400E;
+
+  --font-display: "Poppins", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --shadow-soft: 0 1px 2px rgba(42,39,36,0.04), 0 4px 12px rgba(42,39,36,0.05);
+  --shadow-lift: 0 2px 4px rgba(42,39,36,0.05), 0 10px 24px rgba(42,39,36,0.08);
+  --shadow-bag: 0 16px 32px -14px rgba(42,39,36,0.22);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes kenburns {
+  0%   { transform: scale(1.08) translate(0,0); }
+  100% { transform: scale(1.16) translate(-1.5%, -1.5%); }
+}
+.animate-kenburns { animation: kenburns 18s ease-out infinite alternate; }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee { animation: marquee 26s linear infinite; }
+
+:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.gradient-orange {
+  background-image: linear-gradient(160deg, #E8722A 0%, #D2661F 100%);
+}
+.gradient-leaf {
+  background-image: linear-gradient(160deg, #6FA33F 0%, #5C8B32 100%);
+}
+.text-balance { text-wrap: balance; }
+
+/* Display weight utilities (used with font-display) */
+.font-700 { font-weight: 700; }
+.font-800 { font-weight: 800; }
