@@ -25,11 +25,11 @@ export default function Hero() {
             {BRAND.name} Animal Nutrition
           </span>
           <h1 className="mt-4 text-balance font-display font-800 text-3xl leading-[1.1] tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Nutrition That Helps Growth Go Further.
+            {BRAND.tagline}
           </h1>
           <p className="mt-5 max-w-md text-base leading-relaxed text-white/85 sm:text-lg">
-            Scientifically formulated feed for poultry, fish, shrimp and cattle —
-            trusted by farmers and dealers across India.
+            Scientifically formulated cattle feed and poultry feed — trusted by
+            farmers, dairy owners, poultry farmers and dealers across India.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link

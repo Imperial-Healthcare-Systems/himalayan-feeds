@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="GMP mark">
+  <path d="M60 8l44 18v32c0 27-18 45-44 54-26-9-44-27-44-54V26L60 8z" fill="none" stroke="#B14D17" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M60 17l36 15v27c0 22-15 37-36 45-21-8-36-23-36-45V32l36-15z" fill="#B14D17" opacity="0.10"/>
+  <path d="M44 58l11 11 22-24" fill="none" stroke="#C85A18" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="60" y="99" text-anchor="middle" font-family="Poppins, Segoe UI, system-ui, sans-serif" font-size="15" font-weight="800" letter-spacing="0.6" fill="#B14D17">GMP</text>
+</svg>

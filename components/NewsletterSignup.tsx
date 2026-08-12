@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { BRAND } from "@/lib/site";
+import { enquiryHref, SUBSCRIBE_TYPE } from "@/lib/enquiry";
 
 /* ---------------- Footer signup ----------------
    There is no mailing-list backend on this site, so the address is handed to
    WhatsApp as a prefilled message — the same pattern the contact and
-   dealership forms use. Swap `submit` for a POST to a real list provider
-   (Mailchimp, Brevo, a route handler) when one exists. */
+   dealership forms use, and through the same builder, so a sign-up arrives
+   labelled rather than looking like an unexplained stray message.
+   Swap `submit` for a POST to a real list provider (Mailchimp, Brevo, a route
+   handler) when one exists. */
 export default function NewsletterSignup() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
@@ -17,10 +19,10 @@ export default function NewsletterSignup() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!valid) return;
-    const text = encodeURIComponent(
-      `Please add me to Himalayan Feeds updates. Email: ${email.trim()}`
+    window.open(
+      enquiryHref("subscribe", SUBSCRIBE_TYPE, [["Email", email.trim()]]),
+      "_blank"
     );
-    window.open(`https://wa.me/${BRAND.whatsapp}?text=${text}`, "_blank");
     setSent(true);
   };
 
@@ -38,7 +40,9 @@ export default function NewsletterSignup() {
           Thanks — we&apos;ll be in touch.
         </p>
       ) : (
-        <form onSubmit={submit} className="mt-4 flex flex-col gap-2.5 sm:flex-row">
+        /* Always stacked: the footer column is narrow at lg, and a side-by-side
+           input and button squeezed both. Vertical is normal for a footer. */
+        <form onSubmit={submit} className="mt-4 flex flex-col gap-2.5">
           <label htmlFor="footer-email" className="sr-only">
             Your email address
           </label>
@@ -47,7 +51,9 @@ export default function NewsletterSignup() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Your email address"
+            /* Short enough not to clip in the narrow footer column — the
+               visually-hidden label above carries the full wording. */
+            placeholder="Your email"
             className="min-w-0 flex-1 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-cream placeholder:text-cream/40 outline-none transition-colors focus:border-orange"
           />
           <button

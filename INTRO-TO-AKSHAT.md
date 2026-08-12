@@ -10,8 +10,7 @@ Read top to bottom once. After that, use it as a lookup table.
 ## 1. What this project is
 
 A **marketing and lead-generation website** for Himalayan Feeds Private Limited,
-a Kashmir-based animal feed manufacturer selling poultry, fish, shrimp and
-cattle feed.
+a Kashmir-based animal feed manufacturer selling poultry, fish and cattle feed.
 
 The site has one job: **get farmers to call, and get shopkeepers to apply for a
 dealership.** Everything on it points at a phone number, a WhatsApp chat, or the
@@ -103,7 +102,8 @@ himalayanfeeds--main/
 │   │   ├── hf-logo-color.svg     header logo
 │   │   ├── hf-logo-white.svg     footer logo
 │   │   ├── hf-logo-black.svg     unused alternate
-│   │   ├── poultry/fish/shrimp/cattle.png   product photos (⚠ see §11)
+│   │   ├── poultry/fish/cattle.png         product photos (⚠ see §11)
+│   │   ├── shrimp.png                      unreferenced — safe to delete
 │   │   └── himalayan-hero-poster.webp       video fallback frame
 │   └── videos/himalayan-hero.mp4
 │
@@ -390,9 +390,9 @@ one available.
 | **`cattle.png`** | **8.0 MB** | ⚠ product card |
 | **`fish.png`** | **7.5 MB** | ⚠ product card |
 | **`poultry.png`** | **7.4 MB** | ⚠ product card |
-| **`shrimp.png`** | **7.1 MB** | ⚠ product card |
+| **`shrimp.png`** | **7.1 MB** | ⚠ unreferenced — the shrimp category was removed |
 
-⚠ **The four product PNGs total ~30 MB** to render as small `aspect-video`
+⚠ **The three product PNGs total ~23 MB** to render as small `aspect-video`
 cards. `next/image` optimises them on delivery, but they bloat the repo, slow
 builds, and cost money on serverless image optimisation. Converting them to
 WebP at ~1600px wide would put each under 200 KB. **This is the single biggest

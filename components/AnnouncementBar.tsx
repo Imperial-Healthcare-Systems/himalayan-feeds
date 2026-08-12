@@ -2,8 +2,8 @@ import { BRAND } from "@/lib/site";
 
 const MESSAGES = [
   "Now onboarding new dealers across India — attractive margins & full support",
-  "FSSAI-certified manufacturing · Antibiotic-free formulations",
-  "Poultry · Fish · Shrimp · Cattle — one trusted feed partner",
+  "FSSAI-registered manufacturing · Antibiotic-free formulations",
+  BRAND.descriptor,
   `Call us on ${BRAND.phone} for bulk & dealership enquiries`,
 ];
 

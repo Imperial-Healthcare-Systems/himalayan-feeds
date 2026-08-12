@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="HACCP mark">
+  <path d="M60 8l45 26v52L60 112 15 86V34L60 8z" fill="none" stroke="#4E7A28" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M60 18l36 21v42L60 102 24 81V39l36-21z" fill="#4E7A28" opacity="0.10"/>
+  <circle cx="60" cy="52" r="15" fill="none" stroke="#4E7A28" stroke-width="5"/>
+    <path d="M60 44v9l6 5" fill="none" stroke="#4E7A28" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="60" y="92" text-anchor="middle" font-family="Poppins, Segoe UI, system-ui, sans-serif" font-size="13" font-weight="800" letter-spacing="0.6" fill="#4E7A28">HACCP</text>
+</svg>

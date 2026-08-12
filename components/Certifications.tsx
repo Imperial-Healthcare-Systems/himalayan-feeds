@@ -1,65 +1,47 @@
-import Image from "next/image";
+import { CERTIFICATIONS, type Certification } from "@/lib/site";
 import Reveal from "./Reveal";
 
 /* ---------------- Certifications & standards ----------------
 
-   ⚠ PLACEHOLDER MARKS — NO OFFICIAL ARTWORK IS USED HERE.
+   ⚠ THE MARKS IN /public/images/certifications ARE PLACEHOLDERS.
 
-   No certification logo files or certification data existed anywhere in this
-   project, so each entry renders a plain monogram in a brand-coloured ring.
-   That treatment is deliberately typographic: it must NOT be mistaken for an
-   official seal, so it does not imitate the rosette/starburst shapes the real
-   ISO, GMP, HACCP and BAP marks use.
+   They are our own typographic badges, not the official artwork of FSSAI,
+   ISO, GMP or HACCP, and they avoid the rosette/starburst silhouettes the
+   real seals use so they cannot be mistaken for a genuine certificate mark.
+   See that folder's README for the pre-launch checklist.
 
-   To drop in the real artwork later, add the file to /public/images/ and set
-   `logo` on the entry — the component switches to <Image> automatically and
-   the monogram disappears. Nothing else needs changing.
-
-   No certificate numbers, issuing bodies, accreditation scopes or dates are
-   claimed here, because none are recorded anywhere in this project. */
-type Certification = {
-  /** Shown in the placeholder ring. Ignored once `logo` is set. */
-  code: string;
-  /** The visible label, and the alt text once a real logo is supplied. */
-  name: string;
-  /** Path under /public to the official mark, e.g. "/images/cert-iso.svg". */
-  logo?: string;
-};
-
-const CERTIFICATIONS: Certification[] = [
-  { code: "ISO", name: "ISO 9001:2015 Certified" },
-  { code: "GMP", name: "GMP Certified" },
-  { code: "HACCP", name: "HACCP Certified" },
-  { code: "BAP", name: "BAP Certified" },
-];
+   No certificate number, licence number, issuing body, accreditation scope
+   or expiry date is claimed anywhere, because none has been supplied. */
 
 /* One half of the marquee track. The `marquee` keyframe translates by -50%, so
    the track is two identical halves and the seam is invisible. The list is
-   repeated inside each half because four items (~1100px) are narrower than the
-   container on desktop, which would leave a visible gap mid-loop. */
+   repeated inside each half because four items are narrower than the container
+   on desktop, which would leave a visible gap mid-loop. */
 const HALF = [...CERTIFICATIONS, ...CERTIFICATIONS];
 
 function CertItem({ c }: { c: Certification }) {
   return (
-    <li className="flex shrink-0 items-center gap-3.5 border-l border-cream-deep px-7 py-6 sm:px-9">
-      {c.logo ? (
-        <Image
-          src={c.logo}
-          alt={c.name}
-          width={48}
-          height={48}
-          className="h-12 w-12 object-contain"
-        />
-      ) : (
-        /* Decorative: the name beside it already conveys this to screen readers. */
-        <span
-          aria-hidden="true"
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-leaf/25 bg-leaf-light/50 font-display font-700 text-[11px] tracking-tight text-leaf-dark"
-        >
-          {c.code}
-        </span>
-      )}
-      <span className="whitespace-nowrap text-sm font-medium text-ink">{c.name}</span>
+    <li className="flex shrink-0 items-center gap-4 border-l border-cream-deep px-7 py-6 sm:px-9">
+      {/* Local SVG badges, so next/image is not usable here (it refuses SVG
+          without dangerouslyAllowSVG) and there is nothing to optimise anyway.
+          eager, not lazy: the marquee translates items horizontally out of the
+          viewport, so a lazy image never intersects and pops in blank when it
+          scrolls back. All four badges together are under 3 KB. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={c.logo}
+        alt=""
+        aria-hidden="true"
+        width={120}
+        height={120}
+        loading="eager"
+        decoding="async"
+        className="h-12 w-12 shrink-0 object-contain transition-transform duration-500 ease-out hover:scale-110"
+      />
+      <span className="whitespace-nowrap">
+        <span className="block text-sm font-semibold text-ink">{c.name}</span>
+        <span className="mt-0.5 block text-[11.5px] text-ink-soft/70">{c.note}</span>
+      </span>
     </li>
   );
 }
@@ -70,7 +52,7 @@ export default function Certifications() {
        as a slim trust strip rather than a full content block. */
     <section
       aria-labelledby="certifications-heading"
-      className="bg-gradient-to-b from-cream-deep/70 to-cream-deep/25 py-14 lg:py-20"
+      className="bg-gradient-to-b from-cream-deep/70 to-cream-deep/25 py-12 lg:py-16"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Section heading */}
@@ -85,7 +67,8 @@ export default function Certifications() {
             >
               Quality you can trust.
             </h2>
-            <p className="mt-4 leading-relaxed text-ink-soft">
+            <span className="mx-auto mt-5 block h-1 w-16 rounded-full bg-leaf animate-rule" />
+            <p className="mt-5 leading-relaxed text-ink-soft">
               Every formulation is produced with rigorous quality, safety and
               manufacturing standards at its core.
             </p>
@@ -100,7 +83,7 @@ export default function Certifications() {
             becomes horizontally scrollable instead of stranding the user on
             whichever items happen to be in frame. */}
         <Reveal delay={0.1}>
-          <div className="mt-12 overflow-hidden rounded-3xl border border-cream-deep [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)] motion-reduce:overflow-x-auto lg:mt-14">
+          <div className="mt-9 overflow-hidden rounded-3xl border border-cream-deep bg-cream/60 [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)] motion-reduce:overflow-x-auto lg:mt-10">
             <div className="flex w-max animate-marquee [animation-duration:36s] hover:[animation-play-state:paused]">
               {[0, 1].map((half) => (
                 <ul
@@ -111,7 +94,7 @@ export default function Certifications() {
                   className="flex shrink-0 items-center"
                 >
                   {HALF.map((c, i) => (
-                    <CertItem key={`${half}-${c.name}-${i}`} c={c} />
+                    <CertItem key={`${half}-${c.code}-${i}`} c={c} />
                   ))}
                 </ul>
               ))}

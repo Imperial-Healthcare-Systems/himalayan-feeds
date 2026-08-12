@@ -29,15 +29,30 @@ export function PageHeader({
 }) {
   return (
     <section className="bg-cream-deep/60 border-b border-cream-deep">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 lg:py-20 text-center">
-        <span className="inline-block rounded-full bg-orange-light text-orange-dark text-xs font-bold tracking-widest uppercase px-4 py-1.5">
+      {/* Entrance is a CSS keyframe with inline delays rather than Reveal:
+          this block is always above the fold, so a viewport trigger would fire
+          instantly anyway and would cost a client component on every page. */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 lg:py-16 text-center">
+        <span
+          className="inline-block animate-settle rounded-full bg-orange-light text-orange-dark text-xs font-bold tracking-widest uppercase px-4 py-1.5"
+          style={{ animationDelay: "40ms" }}
+        >
           {eyebrow}
         </span>
-        <h1 className="mt-5 font-display font-800 text-4xl sm:text-5xl tracking-tight text-ink text-balance">
+        <h1
+          className="mt-5 animate-settle font-display font-800 text-4xl sm:text-5xl tracking-tight text-ink text-balance"
+          style={{ animationDelay: "120ms" }}
+        >
           {title}
         </h1>
+        <span className="mx-auto mt-5 block h-1 w-14 rounded-full bg-orange animate-rule" />
         {sub && (
-          <p className="mt-4 max-w-2xl mx-auto text-ink-soft text-lg">{sub}</p>
+          <p
+            className="mt-5 max-w-2xl mx-auto animate-settle text-ink-soft text-lg"
+            style={{ animationDelay: "260ms" }}
+          >
+            {sub}
+          </p>
         )}
       </div>
     </section>

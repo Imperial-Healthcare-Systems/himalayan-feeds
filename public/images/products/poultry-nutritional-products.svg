@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" width="900" height="1200" role="img" aria-label="Poultry Nutritional Products — pack shot pending">
+  <defs>
+    <linearGradient id="sack" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8722A"/>
+      <stop offset="1" stop-color="#C85A18"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ground shadow -->
+  <ellipse cx="450" cy="1094" rx="248" ry="26" fill="#2A2724" opacity="0.13"/>
+
+  <!-- Sack body -->
+  <rect x="176" y="150" width="548" height="930" rx="44" fill="url(#sack)"/>
+  <!-- Folded top -->
+  <path d="M176 150Q450 96 724 150L724 214Q450 160 176 214Z" fill="#C85A18"/>
+  <!-- Soft highlight down the left face -->
+  <rect x="212" y="228" width="70" height="820" rx="35" fill="#FFFFFF" opacity="0.08"/>
+
+  <!-- Label panel -->
+  <rect x="238" y="392" width="424" height="450" rx="30" fill="#FBF6EE" opacity="0.96"/>
+
+  <text x="450" y="470" text-anchor="middle" font-family="Poppins, Segoe UI, system-ui, sans-serif"
+        font-size="21" font-weight="700" fill="#C85A18" letter-spacing="3.6">HIMALAYAN FEEDS</text>
+  <rect x="386" y="492" width="128" height="3" rx="1.5" fill="#E8722A"/>
+
+  <text x="450" y="588" text-anchor="middle" font-family="Poppins, Segoe UI, system-ui, sans-serif"
+        font-size="62" font-weight="800" fill="#C85A18" letter-spacing="1">HF</text>
+
+  <text text-anchor="middle" font-family="Poppins, Segoe UI, system-ui, sans-serif"
+        font-size="35" font-weight="700" fill="#2A2724"><tspan x="450" y="650">Poultry</tspan><tspan x="450" y="698">Nutritional</tspan><tspan x="450" y="746">Products</tspan></text>
+
+  <rect x="366" y="792" width="168" height="30" rx="15" fill="#E8722A" opacity="0.14"/>
+  <text x="450" y="813" text-anchor="middle" font-family="Poppins, Segoe UI, system-ui, sans-serif"
+        font-size="15" font-weight="700" fill="#C85A18" letter-spacing="2.2">PACK SHOT SOON</text>
+
+  <text x="450" y="1006" text-anchor="middle" font-family="Poppins, Segoe UI, system-ui, sans-serif"
+        font-size="18" font-weight="700" fill="#FBF6EE" letter-spacing="3.4" opacity="0.85">PURE · NUTRITIOUS · HYGIENIC</text>
+</svg>

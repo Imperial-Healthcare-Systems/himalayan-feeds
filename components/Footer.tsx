@@ -49,9 +49,15 @@ function CopyrightMark() {
 /* ---------------- Site footer ---------------- */
 export default function Footer() {
   return (
-    // No background on <footer> itself — the wave below must sit on whatever
-    // section precedes it, which is cream on some pages and cream-deep on others.
-    <footer className="text-cream/80">
+    /* INVARIANT: the last section of every page must end on plain `cream`.
+
+       The wave below is an ink-filled path on a transparent canvas, and the
+       footer is a sibling of <main> — so the area above the curve shows the
+       *body* background, not the section above it. If a page ends on a tinted
+       cream-deep, that tint meets plain cream at the footer boundary and reads
+       as a hard horizontal band. Ending every page at `to-cream` makes the
+       seam invisible. */
+    <footer className="bg-cream text-cream/80">
       {/* Curved top edge */}
       <svg
         viewBox="0 0 1440 64"
@@ -62,7 +68,9 @@ export default function Footer() {
         <path d="M0 64V26c240-30 480-34 720-14s480 16 720-12v64z" />
       </svg>
 
-      <div className="bg-ink">
+      {/* -mt-px closes the sub-pixel gap that fractional SVG heights can leave
+          between the wave and the panel at some zoom levels. */}
+      <div className="-mt-px bg-ink">
         {/* Main grid — brand, link columns, contact, signup */}
         <div className="mx-auto grid max-w-7xl gap-x-8 gap-y-10 px-4 py-14 sm:grid-cols-2 sm:px-6 lg:grid-cols-12">
           {/* Registered office */}
@@ -71,7 +79,13 @@ export default function Footer() {
             <p className="mt-4 font-display font-700 text-sm uppercase tracking-wider text-cream">
               {BRAND.legal}
             </p>
-            <address className="mt-2 text-sm not-italic leading-relaxed text-cream/60">
+            <p className="mt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-orange/80">
+              {BRAND.positioning}
+            </p>
+            <p className="mt-3 text-sm italic leading-relaxed text-cream/70">
+              &ldquo;{BRAND.tagline}&rdquo;
+            </p>
+            <address className="mt-3 text-sm not-italic leading-relaxed text-cream/60">
               {BRAND.address.line1}
               <br />
               {BRAND.address.line2}
@@ -105,18 +119,25 @@ export default function Footer() {
               {CATEGORIES.map((c) => (
                 <li key={c.slug}>
                   <Link
-                    href={`/products#${c.slug}`}
-                    className="transition-colors hover:text-orange"
+                    href={`/products/${c.slug}`}
+                    className="inline-flex items-center gap-2 transition-colors hover:text-orange"
                   >
                     {c.name}
+                    {c.status === "coming-soon" && (
+                      <span className="rounded-full border border-white/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-cream/45">
+                        Soon
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact */}
-          <div className="lg:col-span-2">
+          {/* Contact — 3 columns, not 2. At the lg breakpoint the 12-column
+              grid plus gaps left this column ~98px wide, which is narrower
+              than the email domain and forced it to break mid-word. */}
+          <div className="lg:col-span-3">
             <h4 className="font-display font-700 text-sm uppercase tracking-widest text-cream">
               Get in touch
             </h4>
@@ -157,7 +178,7 @@ export default function Footer() {
               <li>
                 <a
                   href={`mailto:${BRAND.email}`}
-                  className="group flex items-center gap-2.5 transition-colors hover:text-orange"
+                  className="group flex items-start gap-2.5 transition-colors hover:text-orange"
                 >
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 text-cream/70 transition-colors group-hover:border-orange/50 group-hover:text-orange">
                     <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none">
@@ -179,17 +200,24 @@ export default function Footer() {
                       />
                     </svg>
                   </span>
-                  {/* Sized to fit this column on one line: the span has ~141px
-                      and the address needs ~150px at 12px, ~137px at 11px.
-                      break-words only matters if BRAND.email gets longer. */}
-                  <span className="min-w-0 break-words text-[11px]">{BRAND.email}</span>
+                  {/* Wraps rather than being shrunk to fit. The previous 11px
+                      was tuned to a measured column width, which broke the
+                      moment the address or the grid changed — and left this
+                      one line noticeably smaller than everything around it.
+                      <wbr> after the @ puts the break at the only place an
+                      email reads well split; break-words is the fallback if
+                      the domain alone ever outgrows the column. */}
+                  <span className="min-w-0 break-words">
+                    {BRAND.email.split("@")[0]}@<wbr />
+                    {BRAND.email.split("@").slice(1).join("@")}
+                  </span>
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Signup + social */}
-          <div className="sm:col-span-2 lg:col-span-3">
+          {/* Signup + social — gives the column back to Contact above */}
+          <div className="sm:col-span-2 lg:col-span-2">
             <NewsletterSignup />
 
             <ul className="mt-6 flex flex-wrap items-center gap-2.5">

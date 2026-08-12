@@ -1,11 +1,18 @@
 import Link from "next/link";
-import { BRAND } from "@/lib/site";
+import { BRAND, CATEGORIES } from "@/lib/site";
 import Reveal from "./Reveal";
 import CountUp from "./CountUp";
 
+/* Derived, so it can never drift from the catalogue. */
+const PRODUCT_COUNT = CATEGORIES.reduce((n, c) => n + c.products.length, 0);
+
 /* ---------------- Trust strip ----------------
    `to` carries the counter target; `to: null` marks the one stat that isn't a
-   number (FSSAI), which renders `k` verbatim instead. */
+   number (FSSAI), which renders `k` verbatim instead.
+
+   ⚠ "Years of feed expertise" and "Active dealers" are unverified template
+   figures inherited from the original build. Confirm or remove before launch.
+   The product count is derived from CATEGORIES, so it is always accurate. */
 const STATS = [
   {
     to: 12,
@@ -38,10 +45,10 @@ const STATS = [
     ),
   },
   {
-    to: 4,
+    to: PRODUCT_COUNT,
     suffix: "",
     k: "",
-    v: "Species covered",
+    v: "Products in the range",
     icon: (
       <path
         d="M12 3.5l8.5 4.5-8.5 4.5L3.5 8l8.5-4.5zM3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"
@@ -56,7 +63,7 @@ const STATS = [
     to: null,
     suffix: "",
     k: "FSSAI",
-    v: "Certified manufacturing",
+    v: "Registered manufacturing",
     icon: (
       <path
         d="M12 3l1.9 1.5 2.4-.2.8 2.3 2 1.3-.9 2.2.9 2.2-2 1.3-.8 2.3-2.4-.2L12 17l-1.9-1.5-2.4.2-.8-2.3-2-1.3.9-2.2-.9-2.2 2-1.3.8-2.3 2.4.2L12 3zM8.5 19.5L12 18l3.5 1.5M10 10.2l1.4 1.4 2.8-2.8"
@@ -76,7 +83,7 @@ export function TrustStrip() {
        between them are invisible and the whole page reads as one gradient.
        Padding is deliberately different per section so they still feel distinct.
        Ramp: cream → 70 → 20 → 70 → 25 → cream → 55 (into the footer wave). */
-    <section className="relative isolate overflow-hidden bg-gradient-to-b from-cream to-cream-deep/70 py-16 lg:py-20">
+    <section className="relative isolate overflow-hidden bg-gradient-to-b from-cream to-cream-deep/70 py-12 lg:py-16">
       {/* Mountain-range watermark — ties the band to the brand without competing */}
       <svg
         viewBox="0 0 1440 220"
@@ -168,7 +175,7 @@ const WHY_US_TONES = {
 export function WhyUs({ tone = "rising" }: { tone?: keyof typeof WHY_US_TONES }) {
   return (
     /* Ramp step 3 — the feature cards sit on the deepest part of the band. */
-    <section className={`bg-gradient-to-b ${WHY_US_TONES[tone]} py-20 lg:py-28`}>
+    <section className={`bg-gradient-to-b ${WHY_US_TONES[tone]} py-16 lg:py-20`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Section heading */}
         <Reveal>
@@ -179,11 +186,12 @@ export function WhyUs({ tone = "rising" }: { tone?: keyof typeof WHY_US_TONES })
             <h2 className="mt-5 font-display font-800 text-3xl sm:text-4xl tracking-tight text-ink text-balance">
               Feed that farmers come back for
             </h2>
+            <span className="mt-5 block h-1 w-16 origin-left rounded-full bg-orange animate-rule" />
           </div>
         </Reveal>
 
         {/* Feature cards */}
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {FEATURES.map((f, i) => (
             <Reveal key={f.title} delay={i * 0.08}>
               <div className="h-full rounded-3xl bg-white border border-cream-deep p-7 shadow-soft">
@@ -211,10 +219,10 @@ export function WhyUs({ tone = "rising" }: { tone?: keyof typeof WHY_US_TONES })
 export function DealershipBand() {
   return (
     /* Ramp step 5 — lightens back to plain cream so the orange panel pops. */
-    <section className="bg-gradient-to-b from-cream-deep/25 to-cream py-16 lg:py-24">
+    <section className="bg-gradient-to-b from-cream-deep/25 to-cream py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal>
-          <div className="relative overflow-hidden rounded-[2rem] gradient-orange text-white px-8 py-14 sm:px-14 shadow-lift">
+          <div className="relative overflow-hidden rounded-[2rem] gradient-orange text-white px-8 py-12 sm:px-14 shadow-lift">
             {/* Decorative bleed circles */}
             <div className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-white/10" />
             <div className="absolute -left-16 -bottom-16 h-64 w-64 rounded-full bg-white/10" />
@@ -250,64 +258,110 @@ export function DealershipBand() {
   );
 }
 
-/* ---------------- Testimonials ---------------- */
+/* ---------------- Testimonials ----------------
+   ⚠ PLACEHOLDER. All three are unattributed template copy inherited from the
+   original build — no farmer has been quoted or consented. Replace with real,
+   permissioned testimonials or delete this section before launch. */
 const REVIEWS = [
   {
     quote:
       "Switched my broiler farm to Nutri Choice and feed conversion improved within two batches. The margins speak for themselves.",
     name: "Ramesh Das",
-    role: "Poultry farmer · Nadia, WB",
+    role: "Poultry farmer",
   },
   {
     quote:
-      "Matsya Bandhu floats well and keeps my pond water clean. Fish growth has been steady and healthy all season.",
-    name: "Sujit Mondal",
-    role: "Fish farmer · Howrah, WB",
+      "Started the calves on Godhenu Gold and carried them right through to milking. The herd holds condition and the yield has stayed steady.",
+    name: "Bashir Ahmad",
+    role: "Dairy owner",
   },
   {
     quote:
       "As a dealer, the supply is reliable and the support team actually picks up the phone. That is rare in this trade.",
     name: "Anil Kumar",
-    role: "Distributor · Patna, Bihar",
+    role: "Distributor",
   },
 ];
 
+/* Drawn rather than using the "★" character, which some platforms substitute
+   with a colour emoji and which sits on a different baseline in every font. */
+function Stars() {
+  return (
+    <div className="flex gap-1 text-gold" role="img" aria-label="Rated 5 out of 5">
+      {[0, 1, 2, 3, 4].map((i) => (
+        <svg key={i} viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor" aria-hidden>
+          <path d="M10 1.6l2.6 5.2 5.8.85-4.2 4.09.99 5.76L10 14.78l-5.19 2.72.99-5.76-4.2-4.09 5.8-.85L10 1.6z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+function ReviewCard({ r }: { r: (typeof REVIEWS)[number] }) {
+  return (
+    <li className="mx-3 flex w-[300px] shrink-0 flex-col rounded-3xl border border-cream-deep bg-white p-7 shadow-soft transition-all duration-700 ease-out hover:-translate-y-1 hover:shadow-lift sm:w-[360px]">
+      <Stars />
+      <blockquote className="mt-4 flex-1 font-serif text-[16.5px] leading-[1.6] text-ink-soft">
+        &ldquo;{r.quote}&rdquo;
+      </blockquote>
+      <figcaption className="mt-6 border-t border-cream-deep pt-5">
+        <div className="font-display font-700 text-ink">{r.name}</div>
+        <div className="mt-0.5 text-xs text-ink-soft">{r.role}</div>
+      </figcaption>
+    </li>
+  );
+}
+
 export function Testimonials() {
   return (
-    /* Ramp step 6 — the last band before the footer wave, so it deepens into
-       the dark footer. Tall padding gives the page a considered finish. */
-    <section className="bg-gradient-to-b from-cream via-cream-deep/30 to-cream-deep/55 py-24 lg:py-32">
+    /* Ramp step 6 — the last band on the homepage, so it must resolve to plain
+       `cream`: the footer's wave sits on the body background, and any tint left
+       here would meet it as a hard line. See the invariant in Footer.tsx. */
+    <section className="bg-gradient-to-b from-cream via-cream-deep/25 to-cream py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Section heading */}
         <Reveal>
-          <div className="text-center max-w-2xl mx-auto">
+          <div className="mx-auto max-w-2xl text-center">
             <span className="inline-block rounded-full bg-leaf-light text-leaf-dark text-xs font-bold tracking-widest uppercase px-4 py-1.5">
               Success Stories
             </span>
             <h2 className="mt-5 font-display font-800 text-3xl sm:text-4xl tracking-tight text-ink text-balance">
-              Trusted on farms across the east
+              Trusted on farms across the region
             </h2>
+            {/* Centred rules use the default centre origin, so they grow out
+                from the middle; left-aligned ones get origin-left. */}
+            <span className="mx-auto mt-5 block h-1 w-16 rounded-full bg-leaf animate-rule" />
           </div>
         </Reveal>
+      </div>
 
-        {/* Review cards */}
-        <div className="mt-14 grid md:grid-cols-3 gap-6">
-          {REVIEWS.map((r, i) => (
-            <Reveal key={r.name} delay={i * 0.1}>
-              <figure className="h-full rounded-3xl bg-white border border-cream-deep p-7 shadow-soft flex flex-col">
-                <div className="text-gold text-xl">★★★★★</div>
-                <blockquote className="mt-4 text-ink-soft leading-relaxed flex-1">
-                  “{r.quote}”
-                </blockquote>
-                <figcaption className="mt-6 pt-5 border-t border-cream-deep">
-                  <div className="font-display font-700 text-ink">{r.name}</div>
-                  <div className="text-xs text-ink-soft mt-0.5">{r.role}</div>
-                </figcaption>
-              </figure>
-            </Reveal>
+      {/* Flowing rail. Deliberately slow (75s) and paused on hover or keyboard
+          focus — a quote that scrolls past faster than you can read it is
+          decoration, not proof. Reduced motion freezes the animation via
+          globals.css, so the strip becomes a normal horizontal scroller. */}
+      <div className="group relative mt-10 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)] motion-reduce:overflow-x-auto">
+        <div className="flex w-max animate-marquee py-2 [animation-duration:75s] group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]">
+          {[0, 1].map((half) => (
+            <ul
+              key={half}
+              /* The second half is a visual duplicate for the seamless loop —
+                 screen readers should only hear the quotes once. */
+              aria-hidden={half === 1}
+              className="flex shrink-0 items-stretch"
+            >
+              {/* Repeated inside each half: three cards are narrower than the
+                  viewport, which would leave a visible gap mid-loop. */}
+              {[...REVIEWS, ...REVIEWS].map((r, i) => (
+                <ReviewCard key={`${half}-${r.name}-${i}`} r={r} />
+              ))}
+            </ul>
           ))}
         </div>
       </div>
+
+      <p className="mt-6 text-center text-[12.5px] text-ink-soft/60">
+        Hover to pause
+      </p>
     </section>
   );
 }
