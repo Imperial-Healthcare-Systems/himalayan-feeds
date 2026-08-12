@@ -6,7 +6,18 @@ import HeroVideo from "./HeroVideo";
 /* ---------------- Homepage hero ---------------- */
 export default function Hero() {
   return (
-    <section className="relative isolate flex min-h-[440px] items-center overflow-hidden sm:min-h-[500px] md:min-h-[560px] lg:min-h-[680px]">
+    /* Height is viewport-aware, not a fixed 680px. The old value left the
+       fold landing partway through the stat cards below, slicing them in half.
+
+       100svh − 11rem ≈ the viewport minus the announcement bar and header
+       (~133px) minus a ~44px peek. That peek is smaller than the next
+       section's own top padding, so what shows below the fold is clean
+       background — a scroll cue, never a cut-off card.
+
+       svh rather than vh: on mobile, vh includes browser chrome that later
+       collapses, which makes the hero jump on first scroll. The 460px floor
+       keeps it usable on very short windows. */
+    <section className="relative isolate flex min-h-[max(460px,calc(100svh-11rem))] items-center overflow-hidden">
       {/* Background — video, or poster when motion is reduced */}
       <HeroVideo />
 
@@ -46,6 +57,29 @@ export default function Hero() {
             </Link>
           </div>
         </Reveal>
+      </div>
+
+      {/* Scroll cue. Makes the peek below deliberate rather than something the
+          visitor has to guess at. Decorative — the content below is reachable
+          by scrolling, so it is not a control. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-5 hidden justify-center sm:flex"
+      >
+        <span className="flex flex-col items-center gap-1.5 text-white/55">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.22em]">
+            Scroll
+          </span>
+          <svg viewBox="0 0 24 24" className="h-4 w-4 animate-nudge" fill="none">
+            <path
+              d="M6 9l6 6 6-6"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
       </div>
     </section>
   );

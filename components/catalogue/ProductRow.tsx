@@ -150,7 +150,7 @@ export default function ProductRow({
           <dl className="mt-5 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-cream-deep bg-cream-deep sm:grid-cols-3">
             {specs.map((s) => (
               <div key={s.label} className="bg-cream px-4 py-3">
-                <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-soft/55">
+                <dt className="text-[11px] font-bold uppercase tracking-[0.14em] text-ink-soft/60">
                   {s.label}
                 </dt>
                 <dd

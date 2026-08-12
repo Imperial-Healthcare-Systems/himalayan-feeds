@@ -99,10 +99,10 @@ export default function Footer() {
             <h4 className="font-display font-700 text-sm uppercase tracking-widest text-cream">
               Explore
             </h4>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <ul className="mt-4 space-y-0.5 text-sm">
               {NAV.map((n) => (
                 <li key={n.label}>
-                  <Link href={n.href} className="transition-colors hover:text-orange">
+                  <Link href={n.href} className="-mx-1 inline-block px-1 py-1.5 transition-colors hover:text-orange">
                     {n.label}
                   </Link>
                 </li>
@@ -110,27 +110,46 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Products */}
+          {/* Products — each range carries its sub-brand and product count, so
+              the footer gives the same information scent as the header panel
+              rather than three bare words. */}
           <div className="lg:col-span-2">
             <h4 className="font-display font-700 text-sm uppercase tracking-widest text-cream">
               Products
             </h4>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <ul className="mt-4 space-y-2 text-sm">
               {CATEGORIES.map((c) => (
                 <li key={c.slug}>
                   <Link
                     href={`/products/${c.slug}`}
-                    className="inline-flex items-center gap-2 transition-colors hover:text-orange"
+                    className="group -mx-1 block px-1 py-1 transition-colors hover:text-orange"
                   >
-                    {c.name}
-                    {c.status === "coming-soon" && (
-                      <span className="rounded-full border border-white/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-cream/45">
-                        Soon
-                      </span>
-                    )}
+                    <span className="flex items-center gap-2">
+                      <span className="font-medium">{c.name}</span>
+                      {c.status === "coming-soon" ? (
+                        <span className="rounded-full border border-white/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-cream/45">
+                          Soon
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-semibold tabular-nums text-cream/40">
+                          {c.products.length}
+                        </span>
+                      )}
+                    </span>
+                    <span className="mt-0.5 block text-[11.5px] leading-snug text-cream/45">
+                      {c.brand}
+                    </span>
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  href="/products"
+                  className="-mx-1 inline-block px-1 py-1.5 text-[13px] font-semibold text-orange/90 transition-colors hover:text-orange"
+                >
+                  View all products
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -149,7 +168,7 @@ export default function Footer() {
                   href={BRAND.phoneHref}
                   className="group flex items-center gap-2.5 transition-colors hover:text-orange"
                 >
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 text-cream/70 transition-colors group-hover:border-orange/50 group-hover:text-orange">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 text-cream/70 transition-colors group-hover:border-orange/50 group-hover:text-orange">
                     <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none">
                       <path
                         d="M6.6 3.5h-2A1.6 1.6 0 003 5.3 16.4 16.4 0 0018.7 21a1.6 1.6 0 001.8-1.6v-2a1 1 0 00-.85-1l-2.9-.5a1 1 0 00-1 .43l-.7 1a12.6 12.6 0 01-5.3-5.3l1-.7a1 1 0 00.43-1l-.5-2.9a1 1 0 00-1-.85z"
@@ -167,7 +186,7 @@ export default function Footer() {
                   href={`https://wa.me/${BRAND.whatsapp}`}
                   className="group flex items-center gap-2.5 transition-colors hover:text-orange"
                 >
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 text-cream/70 transition-colors group-hover:border-orange/50 group-hover:text-orange">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 text-cream/70 transition-colors group-hover:border-orange/50 group-hover:text-orange">
                     <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor">
                       <path d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1112 20zm4.5-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.7.9-.3.2-.5.1a6.5 6.5 0 01-1.9-1.2 7.2 7.2 0 01-1.3-1.7c-.1-.2 0-.4.1-.5l.4-.4.2-.4a.5.5 0 000-.4c0-.1-.5-1.3-.7-1.8s-.4-.4-.5-.4h-.5a.9.9 0 00-.7.3 2.8 2.8 0 00-.9 2.1 4.9 4.9 0 001 2.6 11 11 0 004.3 3.8c1.5.6 1.8.5 2.2.5a2.5 2.5 0 001.6-1.2 2 2 0 00.2-1.2c-.1-.1-.3-.2-.5-.3z" />
                     </svg>
@@ -180,7 +199,7 @@ export default function Footer() {
                   href={`mailto:${BRAND.email}`}
                   className="group flex items-start gap-2.5 transition-colors hover:text-orange"
                 >
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 text-cream/70 transition-colors group-hover:border-orange/50 group-hover:text-orange">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 text-cream/70 transition-colors group-hover:border-orange/50 group-hover:text-orange">
                     <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none">
                       <rect
                         x="2.75"
@@ -254,24 +273,24 @@ export default function Footer() {
                 </span>
               </p>
 
-              <div className="flex justify-center gap-4 sm:justify-start">
+              <div className="-mx-1.5 flex justify-center gap-2 sm:justify-start">
                 <Link
                   href="/privacy"
-                  className="transition-colors hover:text-orange"
+                  className="inline-block px-1.5 py-1.5 transition-colors hover:text-orange"
                 >
                   Privacy
                 </Link>
 
                 <Link
                   href="/terms"
-                  className="transition-colors hover:text-orange"
+                  className="inline-block px-1.5 py-1.5 transition-colors hover:text-orange"
                 >
                   Terms
                 </Link>
 
                 <Link
                   href="/disclaimer"
-                  className="transition-colors hover:text-orange"
+                  className="inline-block px-1.5 py-1.5 transition-colors hover:text-orange"
                 >
                   Disclaimer
                 </Link>
@@ -290,7 +309,7 @@ export default function Footer() {
                 href="https://www.imperialtechinnovations.com/"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="text-cream/70 transition-colors hover:text-orange"
+                className="inline-block py-1.5 text-cream/70 transition-colors hover:text-orange"
               >
                 Imperial
               </a>

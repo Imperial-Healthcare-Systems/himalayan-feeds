@@ -155,34 +155,65 @@ export const SOCIALS = [
    The catalogue renders them in array order and numbers them accordingly, so
    reordering this array reorders the page. Keep the sequence intact.
 
-   ---- PACK SHOTS ----
-   Seven entries now carry a real cut-out photograph of the client's own bag,
-   matched to the product it most closely is. The bag name printed on the
-   artwork is NOT always the product name used here, so `imageAlt` states what
-   the bag actually says:
+   ---- PACK SHOTS & NAMING ----
+   Ten entries carry a real cut-out photograph of the client's own bag, and
+   each one is NAMED AFTER THE BAG. A dealer reads the printed name, so a
+   catalogue that calls it something else is a catalogue they cannot order
+   from. `name`, `slug` and the image filename all follow the artwork:
 
-     Calf Feed .......................... CALF STARTER      25 kg
-     Dairy Cattle Feed .................. TRANSITION        50 kg   ← see note
-     High-Yield Milking Cattle Feed ..... 10000+            50 kg
-     Chick Starter Feed ................. PRE STARTER       25 kg
-     Broiler Starter Feed ............... STARTER           25 kg
-     Broiler Finisher Feed .............. FINISHER          25 kg
-     Layer Feed ......................... LAYER PHASE-2     50 kg
+     Calf Starter ....... calf-starter ..... CALF STARTER     25 kg
+     Calf Grower ........ calf-grower ...... CALF GROWER      25 kg
+     Heifer & Dry ....... heifer-and-dry ... HEIFER & DRY     50 kg
+     Transition ......... transition ....... TRANSITION       50 kg
+     10000+ ............. 10000-plus ....... 10000+           50 kg
+     Pre Starter ........ pre-starter ...... PRE STARTER      25 kg
+     Starter ............ starter .......... STARTER          25 kg
+     Finisher ........... finisher ......... FINISHER         25 kg
+     Layer Phase-1 ...... layer-phase-1 .... LAYER PHASE-1    50 kg
+     Layer Phase-2 ...... layer-phase-2 .... LAYER PHASE-2    50 kg
 
-   Note: TRANSITION is a specific pre/post-calving feed, not an everyday
-   milking ration — it is the closest available bag, not an exact match.
-   Swap it the moment a general dairy bag is photographed.
+   ---- COPY ----
+   Every description was rewritten against the artwork after the rename. For
+   the seven with a bag, `highlights` are now the bag's OWN printed benefit
+   bullets, so the site and the label a dealer is holding say the same thing —
+   no claim appears here that is not already printed on the sack. Two needed
+   more than a polish, because the rename made the old wording flatly untrue:
+   TRANSITION is a pre/post-calving feed, not the everyday milking ration the
+   old "Dairy Cattle Feed" text described; and PRE STARTER now heads the
+   broiler sequence, so it can no longer be positioned away from commercial
+   broilers. Claims that appear on no bag were dropped — "supports fat
+   percentage" and "mineral fortified" among them.
+
+   `packSizes` for those seven is read off the NET WEIGHT panel of the bag in
+   the photograph. It is the client's own artwork, not a guess, but it records
+   the pack that was photographed — if a size is also sold in another format,
+   this field needs widening.
 
    The remaining five (Buffalo Feed, Cattle Feed Pellets & Mash, Mineral &
    Nutritional Supplements, Broiler Grower Feed, Poultry Nutritional Products)
-   have NO corresponding bag in the supplied artwork and keep a transparent
-   illustrated placeholder. Nothing was forced: a "PREMIUM LAYER FEED" bag on
-   a broiler product, or a sheep-and-goat D. MASH bag on a cattle product,
-   would be a mistake a dealer spots immediately.
+   have NO corresponding bag in the supplied artwork. They keep the client's
+   own product-list names and a transparent illustrated placeholder — there is
+   no printed label to rename them after, and inventing one would put a name on
+   the site that no bag in the warehouse carries.
 
-   Unused artwork that has no slot in this catalogue: CALF GROWER,
-   HEIFER & DRY, LAYER PHASE-1, and four D. MASH bags (sheep & goats — a
-   species the site does not currently sell). */
+   ⚠ Unused artwork: three D. MASH bags — D. MASH, D. MASH @5000 and
+   D. MASH @8000, all printed "A POWER PACKED DIET FOR SHEEP & GOATS". That is
+   a whole fourth range for a species this site does not currently sell, so it
+   has no home in CATEGORIES. Decide whether Himalayan Feeds sells sheep and
+   goat feed; if it does, this needs its own category, not a cattle slot.
+
+   ---- CUT-OUT PIPELINE ----
+   All ten were cut from the studio PNGs in source-assets/product_photos by a
+   4-connected flood fill seeded only from border pixels, threshold 250, with
+   a 10px distance-feathered edge. The threshold matters: the backdrop is
+   253-255 and the WHITE-BODIED bags (PRE STARTER, STARTER, FINISHER, both
+   LAYER PHASE bags) are 246-255, so a looser cut fills straight through the
+   sack and leaves a hollow shell that only looks right because the product
+   card behind it is near-white. Re-cut, don't loosen.
+
+   ⚠ Every bag is printed "HIMALAYAN VALLEY FEEDS PVT. LTD." and carries no
+   sub-brand. The `brand` strings below (Godhenu Gold, Nutri Choice) and
+   BRAND.legal appear on no artwork supplied so far — confirm before launch. */
 
 export type Product = {
   slug: string;
@@ -200,7 +231,8 @@ export type Product = {
   /* ---- Regulated specification ----
      null means "not confirmed by the client in writing". The spec strip
      renders "On request" and routes the visitor to the RFQ instead of
-     showing a number nobody has stood behind. Never fill these from a
+     showing a number nobody has stood behind. Fill these ONLY from the
+     client's own bag artwork or a written confirmation — never from a
      competitor's label — see docs/product-catalogue-spec.md §2.6. */
   form: string | null;
   packSizes: string | null;
@@ -242,55 +274,83 @@ export const CATEGORIES: Category[] = [
     accent: "terracotta",
     status: "available",
     launchNote: null,
-    lifecycle: ["Calf", "In milk", "Peak yield", "Herd-wide", "Add-on"],
+    lifecycle: ["Calf", "Growing calf", "Heifer & dry", "Transition", "Peak yield", "Herd-wide", "Add-on"],
     blurb:
-      "Mineral-fortified cattle feed that improves milk yield, fat content and overall herd health.",
+      "Cattle feed for every stage — supporting milk production, herd health and strong, steady growth.",
     intro:
-      "A dairy animal converts feed into milk every single day, and the quality of that conversion is the whole business. The range follows the animal's own life — from her first weeks as a calf, through to peak lactation and beyond.",
-    image: "/images/cattle.png",
+      "A dairy animal converts feed into milk every single day, and the quality of that conversion is the whole business. The range follows the animal's own life — from her first weeks as a calf, through calving, and on into peak lactation.",
+    image: "/images/cattle.webp",
     imageAlt: "Dairy cattle raised on Himalayan cattle feed",
     products: [
       {
-        slug: "calf-feed",
-        name: "Calf Feed",
+        slug: "calf-starter",
+        name: "Calf Starter",
         stage: "Calf",
-        summary: "Where it starts — early nutrition that shapes the animal she becomes.",
+        summary: "Where it starts — the feed that shapes the animal she becomes.",
         description:
-          "A calf's frame and rumen are built in her first months, and a heifer that grows well reaches service weight sooner. Palatable and easy to digest, so intake starts early and stays consistent through weaning.",
-        highlights: ["Easy to digest", "Supports rumen development", "Palatable through weaning"],
+          "A calf's frame, her rumen and her immunity are all built in the first few months, and a heifer that grows well in that window reaches service weight sooner and milks better for it. Formulated to be easy to digest and palatable enough that intake starts early and holds steady right through weaning.",
+        highlights: ["Strong, even growth", "Bone development", "Better digestion"],
         suitableFor: ["Calves", "Replacement heifers"],
         form: null,
-        packSizes: null,
-        image: "/images/products/calf-feed.webp",
-        imageAlt: "Himalayan Feeds Calf Starter — 25 kg bag",
+        packSizes: "25 kg",
+        image: "/images/products/calf-starter.webp",
+        imageAlt: "Himalayan Feeds Calf Starter — premium calf feed, 25 kg bag",
       },
       {
-        slug: "dairy-cattle-feed",
-        name: "Dairy Cattle Feed",
-        stage: "In milk",
-        summary: "Once she is in milk — the everyday ration for a working herd.",
+        slug: "calf-grower",
+        name: "Calf Grower",
+        stage: "Growing calf",
+        summary: "After the starter — the months that turn a calf into a heifer.",
         description:
-          "A balanced daily feed for cows in regular milk, built around steady energy and protein rather than short-term spikes. Fortified with minerals to support udder health, fertility and body condition across a full lactation cycle.",
-        highlights: ["Steady daily energy", "Mineral fortified", "Holds body condition"],
-        suitableFor: ["Dairy herds", "Crossbred cows"],
+          "Once the rumen is working properly the job changes from getting her eating to building the animal. Formulated for steady frame and bone development through the growing months, so she reaches the heifer stage the right size for her age instead of trying to catch up on it later.",
+        highlights: ["Strong growth & development", "Strong bones", "Supports immunity"],
+        suitableFor: ["Growing calves", "Replacement heifers"],
         form: null,
-        packSizes: null,
-        image: "/images/products/dairy-cattle-feed.webp",
-        imageAlt: "Himalayan Feeds Transition dairy feed — 50 kg bag",
+        packSizes: "25 kg",
+        image: "/images/products/calf-grower.webp",
+        imageAlt: "Himalayan Feeds Calf Grower — premium calf feed, 25 kg bag",
       },
       {
-        slug: "high-yield-milking-feed",
-        name: "High-Yield Milking Cattle Feed",
-        stage: "Peak yield",
-        summary: "At peak lactation — a denser ration for the hardest-working animals.",
+        slug: "heifer-and-dry",
+        name: "Heifer & Dry",
+        stage: "Heifer & dry",
+        summary: "The animals earning nothing today — and building next year's lactation.",
         description:
-          "High-producing animals cannot eat enough volume to meet their own demand, so the answer is a denser feed rather than a bigger scoop. Formulated for peak-yield cows and crossbreds where milk output and fat percentage both need holding through the flush.",
-        highlights: ["Nutrient dense", "Supports fat percentage", "Built for peak yield"],
+          "A maiden heifer and a dry cow are the two animals on the farm that produce nothing this month, which is exactly why their ration is the first one to get cut. Both are building the next lactation. Formulated to hold body condition and support bone development and fertility, so heifers get in calf on time and dry cows calve down fit rather than fat.",
+        highlights: ["Good body condition", "Strong bones", "Better reproduction"],
+        suitableFor: ["Maiden heifers", "Dry cows"],
+        form: null,
+        packSizes: "50 kg",
+        image: "/images/products/heifer-and-dry.webp",
+        imageAlt: "Himalayan Feeds Heifer & Dry — premium feed for heifers and dry cows, 50 kg bag",
+      },
+      {
+        slug: "transition",
+        name: "Transition",
+        stage: "Transition",
+        summary: "Around calving — the few weeks that decide the whole lactation.",
+        description:
+          "Appetite falls away in the days either side of calving, exactly when her demand is climbing fastest, and ground lost in that window is rarely made back later. Built to keep intake up through the changeover, so she walks into milk in condition instead of drawing on her own reserves to produce it.",
+        highlights: ["Improves feed intake", "Supports higher milk yield", "Holds body condition"],
+        suitableFor: ["Dry & freshly calved cows", "Dairy herds"],
+        form: null,
+        packSizes: "50 kg",
+        image: "/images/products/transition.webp",
+        imageAlt: "Himalayan Feeds Transition — premium transition feed, 50 kg bag",
+      },
+      {
+        slug: "10000-plus",
+        name: "10000+",
+        stage: "Peak yield",
+        summary: "At peak lactation — the densest ration in the range.",
+        description:
+          "A high-producing cow physically cannot eat enough volume to cover her own output, so the answer is a denser feed rather than a bigger scoop. Formulated for herds pushing for maximum milk, where yield has to be held right through the flush without the cow paying for it in condition or health.",
+        highlights: ["Nutrient dense", "Built for maximum milk", "Supports herd health"],
         suitableFor: ["High-yield cows", "Crossbreds at flush"],
         form: null,
-        packSizes: null,
-        image: "/images/products/high-yield-milking-feed.webp",
-        imageAlt: "Himalayan Feeds 10000+ premium dairy feed — 50 kg bag",
+        packSizes: "50 kg",
+        image: "/images/products/10000-plus.webp",
+        imageAlt: "Himalayan Feeds 10000+ — premium quality dairy feed, 50 kg bag",
       },
       {
         slug: "buffalo-feed",
@@ -298,8 +358,8 @@ export const CATEGORIES: Category[] = [
         stage: "Buffalo herd",
         summary: "For buffalo — formulated for the animal, not adapted from cattle feed.",
         description:
-          "Buffalo digest and partition nutrients differently from cows, and a feed designed around one does not serve the other. Built for buffalo herds where butterfat is what the milk is paid on.",
-        highlights: ["Buffalo-specific", "Supports butterfat", "Not a rebadged cow feed"],
+          "Buffalo digest fibre and partition nutrients differently from crossbred cows, and a ration designed around one does not serve the other well. Built for buffalo herds, where the milk is paid on fat and the ration has to deliver it.",
+        highlights: ["Buffalo-specific formulation", "Supports butterfat", "Not a rebadged cow feed"],
         suitableFor: ["Buffalo herds", "Fat-based milk pricing"],
         form: null,
         packSizes: null,
@@ -310,9 +370,9 @@ export const CATEGORIES: Category[] = [
         slug: "cattle-pellets-and-mash",
         name: "Cattle Feed Pellets & Mash",
         stage: "Herd-wide",
-        summary: "Across the herd — the same nutrition in whichever form your shed prefers.",
+        summary: "Across the herd — the same nutrition, in whichever form your shed prefers.",
         description:
-          "Pellets travel and store cleanly, cut sorting at the manger and reduce wastage. Mash mixes readily into a home ration where green fodder and silage are already part of the routine. The choice is a handling decision, not a nutritional one.",
+          "Pellets travel and store cleanly, stop the animal sorting the mix at the manger and cut what ends up underfoot. Mash blends readily into a home ration where green fodder and silage are already part of the routine. Which one suits you is a handling decision more than a nutritional one.",
         highlights: ["Two handling formats", "Cuts sorting at the manger", "Reduces wastage"],
         suitableFor: ["Manger-fed sheds", "Home-mixed rations"],
         form: "Pellet or mash",
@@ -324,9 +384,9 @@ export const CATEGORIES: Category[] = [
         slug: "cattle-mineral-supplements",
         name: "Mineral & Nutritional Supplements",
         stage: "Add-on",
-        summary: "Alongside the ration — top-up minerals for herds on a home mix.",
+        summary: "Alongside the ration — the minerals a home mix usually misses.",
         description:
-          "Farms running their own fodder and concentrate mix usually have the energy right and the minerals short. This range fills that gap, supporting fertility, bone development and general herd condition alongside whatever you already feed.",
+          "Farms mixing their own fodder and concentrate normally have the energy about right and the minerals short, and it shows up in fertility long before it shows up in the milk. This range fills that gap alongside whatever you already feed, rather than replacing any part of it.",
         highlights: ["Fills mineral gaps", "Supports fertility", "Used with the main ration"],
         suitableFor: ["Home-mixed rations", "Grazing herds"],
         form: null,
@@ -346,49 +406,49 @@ export const CATEGORIES: Category[] = [
     accent: "orange",
     status: "available",
     launchNote: null,
-    lifecycle: ["Chick", "Starter", "Grower", "Finisher", "In lay", "Add-on"],
+    lifecycle: ["Chick", "Starter", "Grower", "Finisher", "Early lay", "Peak lay", "Add-on"],
     blurb:
-      "Balanced energy-to-protein ratios that drive faster weight gain and better feed conversion in broilers and layers.",
+      "Phase-by-phase poultry feed built around weight gain, feed conversion and egg quality.",
     intro:
       "Poultry margins live in the feed conversion ratio, and a fraction of a point across a full shed is the difference between a profitable cycle and a break-even one. The range runs in the bird's own order, from day-old chick through to a hen in full lay.",
-    image: "/images/poultry.png",
+    image: "/images/poultry.webp",
     imageAlt: "Poultry on a farm raised on Himalayan poultry feed",
     products: [
       {
-        slug: "chick-starter-feed",
-        name: "Chick Starter Feed",
+        slug: "pre-starter",
+        name: "Pre Starter",
         stage: "Chick",
-        summary: "Day one — a gentle first feed for replacement and backyard chicks.",
+        summary: "Day one — the first feed a chick ever eats.",
         description:
-          "Suited to layer replacements, desi and backyard flocks rather than commercial broilers. Fine-textured and palatable so young birds feed readily from day one and the flock grows uniformly.",
-        highlights: ["Fine textured", "Palatable from day one", "Uniform early growth"],
-        suitableFor: ["Layer replacements", "Backyard & desi flocks"],
+          "The opening feed for every bird on the farm, broiler and layer alike. Fine-textured and highly palatable so chicks are eating within hours of placement — which is what decides whether a flock leaves week one even, or already split into birds that are away and birds that never catch up.",
+        highlights: ["Strong start", "Supports immunity", "Better feed conversion"],
+        suitableFor: ["Broiler & layer chicks", "Backyard & desi flocks"],
         form: null,
-        packSizes: null,
-        image: "/images/products/chick-starter-feed.webp",
-        imageAlt: "Himalayan Feeds Pre Starter poultry feed — 25 kg bag",
+        packSizes: "25 kg",
+        image: "/images/products/pre-starter.webp",
+        imageAlt: "Himalayan Feeds Pre Starter — premium poultry feed, 25 kg bag",
       },
       {
-        slug: "broiler-starter-feed",
-        name: "Broiler Starter Feed",
+        slug: "starter",
+        name: "Starter",
         stage: "Starter",
-        summary: "The opening phase, where the whole cycle is decided.",
+        summary: "Once the flock is feeding — the phase that sets the growth curve.",
         description:
-          "A bird that eats well and grows evenly in its opening days carries that advantage all the way to market weight, and one that does not never fully catches up. Sized and formulated so intake begins within hours of placement.",
-        highlights: ["Early intake", "Flock uniformity", "Low wastage"],
+          "With intake established, this is where frame, feather and immunity are laid down together, and where the curve underneath the rest of the cycle gets set. Formulated to keep growth strong and the flock even, so the birds reach the grower phase as one batch rather than three.",
+        highlights: ["Strong growth", "Feather development", "Improves feed efficiency"],
         suitableFor: ["Commercial broiler units", "Contract farming"],
         form: null,
-        packSizes: null,
-        image: "/images/products/broiler-starter-feed.webp",
-        imageAlt: "Himalayan Feeds Starter poultry feed — 25 kg bag",
+        packSizes: "25 kg",
+        image: "/images/products/starter.webp",
+        imageAlt: "Himalayan Feeds Starter — premium poultry feed, 25 kg bag",
       },
       {
         slug: "broiler-grower-feed",
         name: "Broiler Grower Feed",
         stage: "Grower",
-        summary: "As the bird grows — carries the frame through the fastest phase.",
+        summary: "The middle stretch — where most of the bird actually gets built.",
         description:
-          "The middle phase is where a broiler lays down most of its skeletal frame and muscle. Formulated to keep growth rapid without running ahead of what the bird's legs and heart can carry.",
+          "The grower phase lays down the bulk of the skeleton and the muscle on it, and it is also where growth can outrun the legs and heart that have to carry it. Formulated to keep the bird moving quickly without pushing it past what its own frame can support.",
         highlights: ["Frame development", "Controlled growth rate", "Steady intake"],
         suitableFor: ["Commercial broiler units"],
         form: null,
@@ -397,32 +457,46 @@ export const CATEGORIES: Category[] = [
         imageAlt: "Broiler Grower Feed pack",
       },
       {
-        slug: "broiler-finisher-feed",
-        name: "Broiler Finisher Feed",
+        slug: "finisher",
+        name: "Finisher",
         stage: "Finisher",
-        summary: "The closing phase — efficient conversion through to market weight.",
+        summary: "The closing phase — where the feed bill is largest and conversion pays hardest.",
         description:
-          "In the closing phase the bird eats the most feed of any stage, so this is where conversion efficiency pays hardest. Built to finish flocks evenly and hold carcass quality right up to lifting.",
-        highlights: ["Conversion efficiency", "Even finishing", "Carcass quality"],
+          "A broiler eats more in its final stretch than in any phase before it, so a fraction of a point on feed conversion is worth more here than anywhere else in the cycle. Built to carry flocks to weight evenly and hold meat quality right through to lifting.",
+        highlights: ["Maximum weight gain", "Better FCR", "Improves meat quality"],
         suitableFor: ["Commercial broiler units"],
         form: null,
-        packSizes: null,
-        image: "/images/products/broiler-finisher-feed.webp",
-        imageAlt: "Himalayan Feeds Finisher poultry feed — 25 kg bag",
+        packSizes: "25 kg",
+        image: "/images/products/finisher.webp",
+        imageAlt: "Himalayan Feeds Finisher — premium poultry feed, 25 kg bag",
       },
       {
-        slug: "layer-feed",
-        name: "Layer Feed",
-        stage: "In lay",
-        summary: "Once she is laying — sustained lay, sound shells, steady birds.",
+        slug: "layer-phase-1",
+        name: "Layer Phase-1",
+        stage: "Early lay",
+        summary: "Coming into lay — building the hen before she has to perform.",
         description:
-          "A laying hen draws on her own skeleton when the ration falls short, and it shows up first in shell quality and then in persistency. Formulated to support consistent egg size and shell strength across a long laying period.",
-        highlights: ["Shell strength", "Consistent egg size", "Long-lay persistency"],
+          "A pullet has to reach frame and bodyweight before first egg, because whatever she has not built by then she never will. Formulated for the run-up to lay and the opening weeks of production, when body development and early egg output are being asked for at the same time.",
+        highlights: ["Promotes early maturity", "Better body development", "Strong bones"],
+        suitableFor: ["Pullets", "Commercial layer units"],
+        form: null,
+        packSizes: "50 kg",
+        image: "/images/products/layer-phase-1.webp",
+        imageAlt: "Himalayan Feeds Layer Phase-1 — premium layer feed, 50 kg bag",
+      },
+      {
+        slug: "layer-phase-2",
+        name: "Layer Phase-2",
+        stage: "Peak lay",
+        summary: "Deep into lay — holding rate, egg weight and shell strength together.",
+        description:
+          "A hen short of calcium draws it out of her own skeleton, and it shows up in the shell long before it shows up in the count. Formulated for the later laying phase, where the job is to keep production, egg weight and shell strength holding together rather than trading one off against another.",
+        highlights: ["High egg production", "Better shell strength", "Improves egg weight"],
         suitableFor: ["Commercial layer units"],
         form: null,
-        packSizes: null,
-        image: "/images/products/layer-feed.webp",
-        imageAlt: "Himalayan Feeds Layer Phase-2 feed — 50 kg bag",
+        packSizes: "50 kg",
+        image: "/images/products/layer-phase-2.webp",
+        imageAlt: "Himalayan Feeds Layer Phase-2 — premium layer feed, 50 kg bag",
       },
       {
         slug: "poultry-nutritional-products",
@@ -430,8 +504,8 @@ export const CATEGORIES: Category[] = [
         stage: "Add-on",
         summary: "Alongside the ration — support for the moments that strain a flock.",
         description:
-          "Nutritional support for placement, transfer, heat and the tail of a long lay. Used with the main feed rather than in place of it.",
-        highlights: ["Supports stress periods", "Heat and transfer support", "Used with the main feed"],
+          "Placement, transfer, a heat wave and the tail end of a long lay all pull on a flock in ways the daily ration alone is not meant to cover. Used alongside the main feed, never in place of it.",
+        highlights: ["Supports stress periods", "Heat & transfer support", "Used with the main feed"],
         suitableFor: ["Flocks under strain", "Placement & transfer"],
         form: null,
         packSizes: null,
@@ -459,7 +533,7 @@ export const CATEGORIES: Category[] = [
       "Floating pellets with high digestibility that keep water clean and support steady, healthy fish growth.",
     intro:
       "A floating pellet lets you see what the pond is actually eating, so feeding can be matched to appetite instead of guessed at. The Matsya Bandhu range is being developed for clean water and steady, predictable growth.",
-    image: "/images/fish.png",
+    image: "/images/fish.webp",
     imageAlt: "Fish in a pond raised on Himalayan fish feed",
     products: [],
   },

@@ -58,7 +58,11 @@ export function CoverageRail({ category }: { category: Category }) {
           ? "Planned sequence — youngest stage first"
           : "The sequence — youngest stage first"}
       </p>
-      <ol className="mt-3.5 flex items-center gap-0 overflow-x-auto pb-1">
+      {/* Wraps rather than scrolls. A seven-stage range overflowed this row by
+          ~100px at 1440 and clipped the last step with no scroll affordance —
+          a sequence that hides its own final step is worse than one on two
+          lines. Wrapping also means adding a stage can never clip it again. */}
+      <ol className="mt-3.5 flex flex-wrap items-center gap-y-2.5 pb-1">
         {category.lifecycle.map((stage, i) => (
           <li
             key={stage}
@@ -80,7 +84,7 @@ export function CoverageRail({ category }: { category: Category }) {
               <svg
                 viewBox="0 0 24 8"
                 aria-hidden
-                className="mx-2.5 h-2 w-7 shrink-0 text-ink/20 sm:w-10"
+                className="mx-1.5 h-2 w-4 shrink-0 text-ink/20 sm:mx-2 sm:w-6"
               >
                 <path d="M0 4h20M17 1l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -184,7 +188,7 @@ export function QuoteBlock({ category }: { category: Category }) {
           <span>Looking to stock and sell {BRAND.full}?</span>
           <Link
             href="/dealership"
-            className="group inline-flex items-center gap-1.5 font-semibold text-white"
+            className="group -my-1.5 inline-flex items-center gap-1.5 py-1.5 font-semibold text-white"
           >
             <span className="link-rule">Apply for dealership</span>
             <svg viewBox="0 0 16 16" className="h-3 w-3 transition-transform duration-300 ease-out group-hover:translate-x-1" fill="none">

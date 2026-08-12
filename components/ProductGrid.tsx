@@ -125,7 +125,7 @@ export default function ProductGrid() {
                       <div className="absolute inset-0 bg-cream/35 transition-opacity duration-500 group-hover:opacity-0" aria-hidden />
                     )}
                     <span
-                      className={`absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${
+                      className={`absolute left-3 top-3 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-widest ${
                         soon ? "border border-ink/10 bg-white text-ink-soft" : a.chip
                       }`}
                     >
