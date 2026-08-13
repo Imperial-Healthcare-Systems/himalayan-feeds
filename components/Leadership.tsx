@@ -12,26 +12,37 @@ function initials(name: string) {
 }
 
 /* ---------------- Portrait panel ----------------
-   No photograph has been supplied, so rather than a grey placeholder this is
-   a designed panel — monogram, mountain motif, brand line. It reads as
-   intentional at full size and swaps to <img> the moment `photo` is set. */
-function Portrait({ leader }: { leader: Leader }) {
+   A photograph when one exists, otherwise a designed panel — monogram,
+   mountain motif, brand line — rather than a grey placeholder. The fallback
+   reads as intentional at full size and is still used by any seat whose
+   portrait has not been supplied.
+
+   Portraits are pre-cropped to 4:5 in public/images/team, so object-cover has
+   nothing to trim; the aspect box around this component must stay 4/5 or the
+   crop starts cutting into the head. */
+function Portrait({
+  leader,
+  rounded = "rounded-3xl",
+}: {
+  leader: Leader;
+  rounded?: string;
+}) {
   if (leader.photo) {
     return (
       /* eslint-disable-next-line @next/next/no-img-element -- client-supplied
          portrait path; swap to next/image once real photography lands. */
       <img
         src={leader.photo}
-        alt={leader.name ?? ""}
-        width={800}
-        height={1000}
-        className="h-full w-full rounded-3xl object-cover"
+        alt={`${leader.name} — ${leader.role}, ${BRAND.full}`}
+        width={630}
+        height={788}
+        className={`h-full w-full object-cover ${rounded}`}
       />
     );
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-3xl bg-gradient-to-br from-terracotta to-orange-dark">
+    <div className={`relative h-full w-full overflow-hidden bg-gradient-to-br from-terracotta to-orange-dark ${rounded}`}>
       <div
         className="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-white/10 blur-2xl animate-bloom"
         aria-hidden
@@ -62,13 +73,87 @@ function Portrait({ leader }: { leader: Leader }) {
   );
 }
 
-/* ---------------- The people behind the bag ----------------
-   Opens /about. One featured leader given real room — portrait, a lede and
-   three paragraphs in their own voice — then the remaining seats as a slim
-   hairline row rather than four equal cards competing for attention. */
-export default function Leadership() {
-  const [featured, ...rest] = LEADERSHIP;
+/* ---------------- One seat in the roster ----------------
+   A named person, or a seat being held open. The open seat is a dashed panel
+   rather than a grey rectangle, so it reads as "reserved" instead of "image
+   failed to load" — and it carries a line of copy saying so plainly. */
+function Seat({ leader }: { leader: Leader }) {
+  if (!leader.name) {
+    return (
+      <div>
+        <div className="grid aspect-[4/5] w-full place-items-center rounded-2xl border border-dashed border-ink/15 bg-cream-deep/25 px-6 text-center">
+          <div>
+            <div className="mx-auto grid h-11 w-11 place-items-center rounded-xl border border-ink/12 bg-white/70">
+              {/* Outline figure — an empty chair, not a face */}
+              <svg viewBox="0 0 24 24" className="h-5 w-5 text-ink-soft/45" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <circle cx="12" cy="8.5" r="3.6" />
+                <path d="M4.8 20.2a7.2 7.2 0 0 1 14.4 0" strokeLinecap="round" />
+              </svg>
+            </div>
+            <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.18em] text-ink-soft/45">
+              Seat reserved
+            </p>
+          </div>
+        </div>
+        <p className="mt-4 font-display font-700 text-[16px] text-ink/60">
+          To be announced
+        </p>
+        {leader.role && (
+          <p className="mt-1 text-[10.5px] font-bold uppercase tracking-[0.2em] text-ink-soft/45">
+            {leader.role}
+          </p>
+        )}
+        <p className="mt-3 text-[14px] leading-relaxed text-ink-soft/75">
+          This place is held. The name, role and photograph will be added once
+          the appointment is confirmed.
+        </p>
+      </div>
+    );
+  }
 
+  return (
+    <div className="group">
+      <div className="aspect-[4/5] w-full overflow-hidden rounded-2xl border border-cream-deep shadow-soft transition-shadow duration-500 group-hover:shadow-lift">
+        <Portrait leader={leader} rounded="rounded-2xl" />
+      </div>
+      <p className="mt-4 font-display font-700 text-[16px] text-ink">
+        {leader.name}
+      </p>
+      {leader.role && (
+        <p className="mt-1 text-[10.5px] font-bold uppercase tracking-[0.2em] text-terracotta-dark">
+          {leader.role}
+        </p>
+      )}
+      {leader.lede && (
+        <p className="mt-3 font-serif text-[17px] leading-[1.5] tracking-[-0.005em] text-ink">
+          {leader.lede}
+        </p>
+      )}
+      {leader.bio && (
+        <div className="mt-2.5 space-y-3 text-[14px] leading-relaxed text-ink-soft">
+          {leader.bio.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------------- The people behind the bag ----------------
+   Opens /about. Three equal seats in LEADERSHIP order, left to right — the
+   reserved seat leads, then the two named directors.
+
+   This used to give LEADERSHIP[0] a full-width "Director's desk" block with
+   the rest in a slim row beneath. That inverts the moment the first entry is a
+   vacancy: the largest, most prominent block on the page becomes an empty
+   chair, and a real person with real copy is demoted below it. Equal cards
+   keep the requested order without making a held seat the hero.
+
+   Cards are top-aligned and will differ in height — the Director's entry runs
+   to three paragraphs where the others run to two. That is expected; do not
+   trim client copy to even the columns up. */
+export default function Leadership() {
   return (
     <section
       aria-labelledby="people-heading"
@@ -93,78 +178,19 @@ export default function Leadership() {
           </div>
         </Reveal>
 
-        {/* Featured — portrait left, voice right */}
-        {featured?.name && (
-          <Reveal delay={0.1}>
-            <div className="mt-12 grid gap-8 lg:mt-14 lg:grid-cols-[minmax(0,0.62fr)_minmax(0,1fr)] lg:gap-14">
-              <div className="aspect-[4/5] w-full max-w-sm lg:max-w-none">
-                <Portrait leader={featured} />
+        <Reveal delay={0.1}>
+          <div className="mt-12 grid items-start gap-8 sm:grid-cols-2 lg:mt-14 lg:grid-cols-3 lg:gap-10">
+            {LEADERSHIP.map((leader, i) => (
+              <div
+                key={leader.name ?? `seat-${i}`}
+                className="animate-settle"
+                style={{ animationDelay: `${i * 110}ms` }}
+              >
+                <Seat leader={leader} />
               </div>
-
-              <div className="flex flex-col justify-center">
-                <h3 className="font-display text-2xl tracking-tight text-ink sm:text-[28px]">
-                  <span className="font-800">Director&rsquo;s</span>{" "}
-                  <span className="font-400 text-ink/55">desk</span>
-                </h3>
-                <span className="mt-4 block h-px w-10 origin-left bg-terracotta animate-rule" />
-
-                {featured.lede && (
-                  <p className="mt-6 font-serif text-[20px] leading-[1.5] tracking-[-0.005em] text-ink sm:text-[22px]">
-                    {featured.lede}
-                  </p>
-                )}
-
-                <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-ink-soft">
-                  {featured.bio?.map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
-                </div>
-
-                {/* Sign-off */}
-                <div className="mt-8 flex items-center gap-4">
-                  <span aria-hidden className="h-px w-10 shrink-0 bg-terracotta" />
-                  <div>
-                    <p className="font-display font-700 text-[15px] text-ink">
-                      {featured.name}
-                    </p>
-                    <p className="mt-0.5 text-[10.5px] font-bold uppercase tracking-[0.2em] text-terracotta-dark">
-                      {featured.role}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        )}
-
-        {/* Remaining seats — hairline row, deliberately quiet */}
-        {rest.length > 0 && (
-          <Reveal delay={0.2}>
-            <div className="mt-16 border-t border-ink/[0.08] pt-8 lg:mt-20">
-              <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-ink-soft/50">
-                Also on the team
-              </p>
-              {/* gap-px over a tinted backdrop gives hairline rules that reflow
-                  correctly at any column count, unlike divide-x. */}
-              <div className="mt-5 grid gap-px overflow-hidden rounded-2xl bg-cream-deep sm:grid-cols-3">
-                {rest.map((leader, i) => (
-                  <div
-                    key={`${leader.role}-${i}`}
-                    className="animate-settle bg-cream px-5 py-5 transition-colors duration-500 hover:bg-white"
-                    style={{ animationDelay: `${i * 90}ms` }}
-                  >
-                    <p className="font-display font-700 text-[15px] text-ink/70">
-                      {leader.role}
-                    </p>
-                    <p className="mt-1.5 text-[13px] text-ink-soft/60">
-                      {leader.name ?? "To be announced"}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Reveal>
-        )}
+            ))}
+          </div>
+        </Reveal>
       </div>
     </section>
   );

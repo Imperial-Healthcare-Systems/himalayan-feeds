@@ -64,13 +64,37 @@ export const COMPANY = {
 };
 
 /* ---------------- Leadership ----------------
-   PLACEHOLDER ROSTER. Only the contact named in the brief is real; the
-   remaining seats are reserved so the layout is correct once the client
-   supplies names, roles and photographs. Entries with `name: null` render a
-   monogram-free "seat reserved" card and are excluded from structured data. */
+   ORDER IS THE PAGE ORDER, left to right. The reserved seat is deliberately
+   FIRST, at the client's instruction — the position is being held, and the
+   page says so rather than quietly closing the gap. An entry with
+   `name: null` renders as an open seat.
+
+   ⚠ INVENTED COPY — READ BEFORE PUBLISHING. The client has supplied two
+   photographs and two names, and nothing else. Everything written in Shayesta
+   Hamid's entry below was composed by us at the client's request, to stand in
+   until real copy arrives. It is attributed on a live website to a REAL, NAMED
+   PERSON, which is why it is written the way it is:
+
+     - No claim anyone could check. No years of experience, no qualification,
+       no previous employer, no award, no responsibility that could be
+       contradicted by someone who knows the company.
+     - Approach and principle only, in the same register as the Director's
+       entry — which is itself an expansion of the client's own brief.
+     - `role` is the one factual assertion made, and "Director" was chosen
+       because an Indian private limited company must have at least two
+       directors, so it is the safest available placeholder. It is still
+       UNCONFIRMED. If Shayesta Hamid's actual title is different, this is
+       wrong on a live page about a real person — confirm it first.
+
+   Get both the role and the bio approved in writing, then delete this notice.
+   Do not extend this pattern to a third person. */
 export type Leader = {
   name: string | null;
-  role: string;
+  /** null on a reserved seat whose title is not settled either. Inventing a
+      title to fill the line would assert an org structure nobody has confirmed
+      — and this seat sits above two directors, so the guess would be a claim
+      about seniority, not just a label. */
+  role: string | null;
   /** One bold line above the body copy. Sets the tone before the detail. */
   lede: string | null;
   /** Paragraphs. Written in the leader's own voice. */
@@ -79,6 +103,10 @@ export type Leader = {
 };
 
 export const LEADERSHIP: Leader[] = [
+  /* Reserved, and first. `role` is null on purpose: this seat sits ahead of two
+     directors, so any title written here ("Chairman", "Managing Director")
+     would invent a rank as well as a job. Fill in name and role together. */
+  { name: null, role: null, lede: null, bio: null, photo: null },
   {
     name: BRAND.contactPerson,
     role: "Director",
@@ -88,11 +116,20 @@ export const LEADERSHIP: Leader[] = [
       "Working directly with farmers, dairy owners and our dealer network across Jammu & Kashmir means we hear quickly when something is not right, and we would far rather hear it than not. That feedback is worth more to us than any amount of marketing.",
       "Better nutrition makes healthier animals. Healthier animals make more productive farms. And more productive farms build the stronger farming community we set out to serve.",
     ],
-    photo: null,
+    photo: "/images/team/showkat-wani.webp",
   },
-  { name: null, role: "Director", lede: null, bio: null, photo: null },
-  { name: null, role: "Head of Production", lede: null, bio: null, photo: null },
-  { name: null, role: "Head of Sales & Distribution", lede: null, bio: null, photo: null },
+  {
+    name: "Shayesta Hamid",
+    /* ⚠ Placeholder title — see the notice above. */
+    role: "Director",
+    /* ⚠ Everything from here to `photo` is invented copy. */
+    lede: "Quality is decided long before the bag is stitched shut.",
+    bio: [
+      "By the time feed reaches a farm it is far too late to fix it. What protects the farmer is the boring, repetitive part of this business — checking what arrives at the gate, holding a recipe to the gram, and refusing a batch that is nearly right.",
+      "That standard only means something if it survives a busy week. So it is written down, it is followed when nobody is watching, and it does not bend because an order is waiting.",
+    ],
+    photo: "/images/team/shayesta-hamid.webp",
+  },
 ];
 
 /* ---------------- Certifications & standards ----------------
