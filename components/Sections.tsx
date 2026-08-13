@@ -264,14 +264,16 @@ export function DealershipBand() {
    permissioned testimonials or delete this section before launch. */
 const REVIEWS = [
   {
+    /* Sub-brand names stripped — these quoted "Nutri Choice" and "Godhenu
+       Gold", which no longer exist anywhere on the site or on any bag. */
     quote:
-      "Switched my broiler farm to Nutri Choice and feed conversion improved within two batches. The margins speak for themselves.",
+      "Switched my broiler farm to Himalayan Feeds and feed conversion improved within two batches. The margins speak for themselves.",
     name: "Ramesh Das",
     role: "Poultry farmer",
   },
   {
     quote:
-      "Started the calves on Godhenu Gold and carried them right through to milking. The herd holds condition and the yield has stayed steady.",
+      "Started the calves on Calf Starter and carried them right through to milking. The herd holds condition and the yield has stayed steady.",
     name: "Bashir Ahmad",
     role: "Dairy owner",
   },

@@ -5,7 +5,7 @@ import BrandLockup from "@/components/BrandLockup";
 import Leadership from "@/components/Leadership";
 import CountUp from "@/components/CountUp";
 import Reveal from "@/components/Reveal";
-import { BRAND, COMPANY, CATEGORIES } from "@/lib/site";
+import { BRAND, COMPANY, CATEGORIES, AVAILABLE_CATEGORIES } from "@/lib/site";
 
 export const metadata = {
   title: "About Us — Himalayan Feeds Pvt. Ltd.",
@@ -380,7 +380,9 @@ export default function AboutPage() {
               {
                 eyebrow: "Farmers & dairy owners",
                 title: "See the range",
-                body: `${PRODUCT_COUNT} products across two ranges, listed in the animal's own order — from its first weeks through to full production.`,
+                /* Both figures derived — this line read "two ranges" for a
+                   while after the third went live. */
+                body: `${PRODUCT_COUNT} products across ${AVAILABLE_CATEGORIES.length} ranges, listed in the animal's own order — from its first weeks through to full production.`,
                 cta: "Browse the products",
                 href: "/products",
                 accent: "bg-terracotta",

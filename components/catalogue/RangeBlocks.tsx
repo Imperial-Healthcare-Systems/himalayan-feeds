@@ -111,7 +111,7 @@ export function QuoteBlock({ category }: { category: Category }) {
      would be a dead end. It collects an interest registration instead. */
   const body = soon
     ? [
-        `Interest registration — ${category.name} (${category.brand})`,
+        `Interest registration — ${category.name}`,
         "",
         "Please let me know when this range launches.",
         "",
@@ -120,7 +120,7 @@ export function QuoteBlock({ category }: { category: Category }) {
         "Pond / farm size:",
       ].join("\n")
     : [
-        `Quote request — ${category.name} (${category.brand})`,
+        `Quote request — ${category.name}`,
         "",
         "Quantity required:",
         "Delivery location:",
@@ -153,8 +153,8 @@ export function QuoteBlock({ category }: { category: Category }) {
         </span>
         <h3 className="mt-3 max-w-lg font-display font-800 text-2xl tracking-tight text-white sm:text-3xl">
           {soon
-            ? `Be first to know when ${category.brand} launches`
-            : `Pricing for the ${category.brand} range`}
+            ? `Be first to know when ${category.name} launches`
+            : `Pricing for the ${category.name} range`}
         </h3>
         <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/75">
           {soon

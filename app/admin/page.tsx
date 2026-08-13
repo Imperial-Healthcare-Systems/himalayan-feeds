@@ -124,7 +124,7 @@ export default function AdminDashboardPage() {
                 key={c.id}
                 label={c.name}
                 value={c.count}
-                note={c.status === "coming-soon" ? "Not yet launched" : c.brand}
+                note={c.status === "coming-soon" ? "Not yet launched" : c.animal}
                 href={`/admin/products?category=${c.slug}`}
               />
             ))}

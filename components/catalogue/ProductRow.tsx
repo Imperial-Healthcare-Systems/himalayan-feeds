@@ -20,27 +20,35 @@ function quoteHref(product: Product, categoryName: string) {
 /* ---------------- One product — a step in the animal's sequence ----------------
    Rows run in lib/site.ts array order, which is the animal's own life stage
    order: youngest first, then through to adult, then whole-herd formats and
-   add-ons. The numbered rail and its connector make that sequence visible —
-   the products are not grouped under sub-category headings.
+   add-ons. The numbered rail and its connector make that sequence visible, and
+   `index` stays the position in the WHOLE range even where a range is split
+   into sub-category bands — see the note in CatalogueView.
+
+   `headingLevel` exists because that split changes the document outline. On a
+   grouped range the band heading is the h4, so the product name has to be an
+   h5; on an ungrouped one there is no band heading and the product name is the
+   h4 itself. Hard-coding either one skips a level on the other, which is the
+   one thing screen-reader heading navigation cannot recover from.
 
    Server component. Entrance motion is a CSS keyframe with an inline delay,
    so a six-product range still ships zero JavaScript. */
 export default function ProductRow({
   product,
   categoryName,
-  brand,
   accent,
   index,
   isLast,
+  headingLevel = 4,
 }: {
   product: Product;
   categoryName: string;
-  brand: string;
   accent: AccentKey;
   index: number;
   isLast: boolean;
+  headingLevel?: 4 | 5;
 }) {
   const a = ACCENT[accent];
+  const Heading = `h${headingLevel}` as "h4" | "h5";
 
   /* null means the client has not confirmed the figure. Rendering "On request"
      keeps the page honest and turns the gap into an enquiry. */
@@ -107,19 +115,20 @@ export default function ProductRow({
         <div className="min-w-0">
           <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
             <div className="min-w-0">
+              {/* The sub-brand that used to sit beside this chip is gone — it
+                  named a product line no bag carries. The stage chip was doing
+                  the real work anyway; it says where the animal is, which is
+                  what a farmer is scanning the row for. */}
               <div className="flex flex-wrap items-center gap-2.5">
-                <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-ink-soft/60">
-                  {brand}
-                </p>
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.12em] ${a.chip}`}
                 >
                   {product.stage}
                 </span>
               </div>
-              <h3 className="mt-2.5 font-display font-700 text-xl leading-tight text-ink sm:text-[22px]">
+              <Heading className="mt-2.5 font-display font-700 text-xl leading-tight text-ink sm:text-[22px]">
                 {product.name}
-              </h3>
+              </Heading>
               <span
                 className={`mt-2.5 block h-[3px] w-9 rounded-full origin-left transition-transform duration-500 ease-out group-hover:scale-x-[2] ${a.rule}`}
               />

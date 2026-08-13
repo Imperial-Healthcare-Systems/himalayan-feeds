@@ -137,7 +137,7 @@ export default function Footer() {
                       )}
                     </span>
                     <span className="mt-0.5 block text-[11.5px] leading-snug text-cream/45">
-                      {c.brand}
+                      {c.animal}
                     </span>
                   </Link>
                 </li>

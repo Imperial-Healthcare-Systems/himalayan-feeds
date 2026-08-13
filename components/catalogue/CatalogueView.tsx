@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CATEGORIES, getCategory } from "@/lib/site";
+import { CATEGORIES, getCategory, groupedProducts } from "@/lib/site";
 import CategoryNav from "./CategoryNav";
 import ProductRow from "./ProductRow";
 import { RangeStats, CoverageRail, QuoteBlock } from "./RangeBlocks";
@@ -18,6 +18,7 @@ export default function CatalogueView({ activeSlug }: { activeSlug: string }) {
   const a = ACCENT[category.accent];
   const count = category.products.length;
   const soon = category.status === "coming-soon";
+  const bands = groupedProducts(category);
 
   return (
     /* Ramp step 2 — picks up PageHeader's cream-deep/60 and lightens downward. */
@@ -36,16 +37,24 @@ export default function CatalogueView({ activeSlug }: { activeSlug: string }) {
               the entrance animations replay instead of being skipped. */}
           <div key={category.slug} className="mt-10 min-w-0 lg:mt-0">
             {/* Range banner */}
-            <div className="relative overflow-hidden rounded-3xl border border-cream-deep shadow-soft">
-              <Image
-                src={category.image}
-                alt={category.imageAlt}
-                fill
-                sizes="(max-width: 1024px) 100vw, 70vw"
-                priority
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-ink/88 via-ink/62 to-ink/15" aria-hidden />
+            <div className="relative overflow-hidden rounded-3xl border border-cream-deep bg-ink shadow-soft">
+              {/* A range with no photography of its own keeps the ink ground
+                  above and the motifs below, so the banner still reads as a
+                  banner. Borrowing another species' photo would be worse than
+                  the plain panel — see the note on Category.image. */}
+              {category.image && (
+                <>
+                  <Image
+                    src={category.image}
+                    alt={category.imageAlt}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 70vw"
+                    priority
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-ink/88 via-ink/62 to-ink/15" aria-hidden />
+                </>
+              )}
               <div
                 className={`absolute -right-16 -top-16 h-56 w-56 rounded-full bg-gradient-to-br ${a.gradient} opacity-25 blur-2xl animate-bloom`}
                 aria-hidden
@@ -66,7 +75,7 @@ export default function CatalogueView({ activeSlug }: { activeSlug: string }) {
                   className="flex animate-rise flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.22em] text-white/70"
                   style={{ animationDelay: "60ms" }}
                 >
-                  {category.brand}
+                  {category.animal}
                   {soon && (
                     <span className="rounded-full bg-white px-2.5 py-1 text-[10px] tracking-[0.16em] text-ink">
                       Coming soon
@@ -94,9 +103,15 @@ export default function CatalogueView({ activeSlug }: { activeSlug: string }) {
                   <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1 backdrop-blur-sm">
                     {soon ? "In development" : `${count} products`}
                   </span>
-                  <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1 backdrop-blur-sm">
-                    {category.animal}
-                  </span>
+                  {/* `animal` used to sit here as a second chip. It is the
+                      eyebrow above the title now, so repeating it here said the
+                      same thing twice. A grouped range advertises its bands
+                      instead; an ungrouped one simply shows one chip. */}
+                  {category.groups.length > 0 && (
+                    <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1 backdrop-blur-sm">
+                      {category.groups.length} sub-categories
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -116,21 +131,52 @@ export default function CatalogueView({ activeSlug }: { activeSlug: string }) {
                     {count} products
                   </span>
                 </div>
-                {/* No space-y here — each row carries its own pb so the
-                    sequence connector runs unbroken between numbers. */}
-                <ul className="mt-8">
-                  {category.products.map((p, i) => (
-                    <ProductRow
-                      key={p.slug}
-                      product={p}
-                      categoryName={category.name}
-                      brand={category.brand}
-                      accent={category.accent}
-                      index={i}
-                      isLast={i === count - 1}
-                    />
-                  ))}
-                </ul>
+
+                {/* ---------------- Sub-category bands ----------------
+                    An ungrouped range yields exactly one band with no group,
+                    so it renders as the plain sequence it always was and this
+                    whole layer costs it nothing.
+
+                    Numbering runs continuously across bands rather than
+                    restarting under each heading: it is one range read in the
+                    animal's order, and four sequences of two or three would
+                    say the opposite. */}
+                {bands.map(({ group, products }) => (
+                  <section key={group?.slug ?? "all"} className="scroll-mt-32" id={group?.slug}>
+                    {group && (
+                      <div className="mt-12 flex flex-wrap items-baseline gap-x-3 gap-y-1 first:mt-10">
+                        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${a.dot}`} aria-hidden />
+                        <h4 className={`font-display font-700 text-[15px] uppercase tracking-[0.13em] ${a.text}`}>
+                          {group.name}
+                        </h4>
+                        <span className="text-[12px] tabular-nums text-ink-soft/50">
+                          {products.length}
+                        </span>
+                        <p className="w-full text-[13.5px] leading-relaxed text-ink-soft/85">
+                          {group.note}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* No space-y here — each row carries its own pb so the
+                        sequence connector runs unbroken between numbers. */}
+                    <ul className="mt-8">
+                      {products.map(({ product, index }, i) => (
+                        <ProductRow
+                          key={product.slug}
+                          product={product}
+                          categoryName={category.name}
+                          accent={category.accent}
+                          index={index}
+                          /* Last within its own band — the connector must stop
+                             at the band edge, not run under the next heading. */
+                          isLast={i === products.length - 1}
+                          headingLevel={group ? 5 : 4}
+                        />
+                      ))}
+                    </ul>
+                  </section>
+                ))}
               </>
             ) : (
               /* ---------------- Coming soon ----------------
@@ -152,7 +198,7 @@ export default function CatalogueView({ activeSlug }: { activeSlug: string }) {
                   Coming soon
                 </span>
                 <h3 className="mt-4 font-display font-700 text-xl text-ink">
-                  {category.brand} is not available to order yet
+                  {category.name} is not available to order yet
                 </h3>
                 <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-ink-soft">
                   {category.launchNote}

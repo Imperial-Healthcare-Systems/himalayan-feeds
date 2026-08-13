@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* Every route on this site is static, so the only images the optimiser
-     handles are the three category photos. AVIF first buys another ~20% over
+     handles are the four category photos. AVIF first buys another ~20% over
      WebP on those, and the year-long cache TTL is safe because filenames are
      stable and content-addressed by the optimiser. */
   images: {

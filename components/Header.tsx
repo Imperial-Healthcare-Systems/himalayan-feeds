@@ -16,8 +16,8 @@ const DOT: Record<string, string> = {
 
 /* ---------------- Products panel ----------------
    A plain list of range names told a visitor nothing they could not guess.
-   Each row carries the sub-brand, who the range is for, and how many products
-   are in it — enough to choose from the nav instead of clicking through. */
+   Each row carries who the range is for and how many products are in it —
+   enough to choose from the nav instead of clicking through. */
 function ProductsPanel({
   onNavigate,
   pathname,
@@ -78,7 +78,7 @@ function ProductsPanel({
                 )}
               </span>
               <span className="mt-0.5 block text-[12.5px] leading-snug text-ink-soft/75">
-                {c.brand} · {c.animal.replace(/^For /, "")}
+                {c.animal}
               </span>
             </span>
             <svg

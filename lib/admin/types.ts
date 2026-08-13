@@ -25,6 +25,16 @@ export type AdminProduct = {
   name: string;
   /** Category slug — must match a Category.slug */
   category: string;
+  /** Sub-category slug — must match a `ProductGroup.slug` on the parent
+      category, or "" on a range that declares no groups. Maps to
+      Product.group.
+
+      ⚠ ProductForm has no input for this yet. It survives an edit because the
+      draft spreads the existing record, but a product CREATED in the admin
+      lands with "" and drops into the unheaded band at the foot of its range.
+      Add a range-dependent select before the admin is used to author cattle
+      products for real. */
+  group: string;
   slug: string;
   /** Where the product sits in the animal's cycle — maps to Product.stage */
   stage: string;
@@ -58,14 +68,14 @@ export type AdminCategory = {
   id: string;
   slug: string;
   name: string;
-  /** "For dairy cattle & buffalo" */
+  /** Who the range is for — "Cattle & Buffalo". The range eyebrow on the
+      public site. Replaced a `brand` field of invented sub-brands. */
   animal: string;
-  /** Sub-brand: Godhenu Gold / Nutri Choice / Matsya Bandhu */
-  brand: string;
   blurb: string;
   accent: "terracotta" | "orange" | "leaf";
   status: "available" | "coming-soon";
-  image: string;
+  /** null where a live range has no photography yet — see Category.image. */
+  image: string | null;
   order: number;
 };
 
@@ -74,6 +84,7 @@ export function emptyProduct(): Omit<AdminProduct, "id" | "createdAt" | "updated
   return {
     name: "",
     category: "",
+    group: "",
     slug: "",
     stage: "",
     shortDescription: "",
@@ -107,6 +118,9 @@ export function toPublicProduct(p: AdminProduct): Product {
   return {
     slug: p.slug,
     name: p.name,
+    /* Undefined rather than "" on an ungrouped range — Product.group is
+       optional, and an empty string would match no declared group. */
+    group: p.group.trim() || undefined,
     stage: p.stage,
     summary: p.shortDescription,
     description: p.description,

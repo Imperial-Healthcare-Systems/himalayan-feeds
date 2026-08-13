@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CATEGORIES, BRAND } from "@/lib/site";
+import { CATEGORIES, BRAND, groupedProducts } from "@/lib/site";
 import { ACCENT } from "./accents";
 
 /* ---------------- Left panel — categories and their sub-categories ----------------
@@ -55,24 +55,46 @@ export default function CategoryNav({ activeSlug }: { activeSlug: string }) {
                 )}
               </Link>
 
-              {/* Sub-categories — desktop only; on mobile the rail stays a single row */}
+              {/* ---------------- Sub-categories and products ----------------
+                  Desktop only; on mobile the rail stays a single row.
+
+                  Bands come from the same helper the listing uses, so the two
+                  can never fall into different orders. A band heading is a link
+                  to the band, not a dead label — a visitor scanning for
+                  "Milking Feed" wants to land on it, not read the words. An
+                  ungrouped range yields one null-group band and this collapses
+                  back to the flat product list it was before. */}
               {active && count > 0 && (
-                <ul className="ml-4 mt-1.5 hidden space-y-0.5 border-l border-cream-deep pl-4 lg:block">
-                  {cat.products.map((p, j) => (
-                    <li
-                      key={p.slug}
-                      className="animate-rise"
-                      style={{ animationDelay: `${200 + j * 45}ms` }}
-                    >
-                      <a
-                        href={`#${p.slug}`}
-                        className="block rounded-md py-1.5 text-[13px] leading-snug text-ink-soft/80 transition-colors duration-200 hover:text-ink"
-                      >
-                        {p.name}
-                      </a>
-                    </li>
+                <div className="ml-4 mt-1.5 hidden border-l border-cream-deep pl-4 lg:block">
+                  {groupedProducts(cat).map(({ group, products }) => (
+                    <div key={group?.slug ?? "all"} className="mt-2.5 first:mt-0">
+                      {group && (
+                        <a
+                          href={`#${group.slug}`}
+                          className={`block py-1 text-[10.5px] font-bold uppercase tracking-[0.14em] transition-colors duration-200 hover:underline ${a.text}`}
+                        >
+                          {group.name}
+                        </a>
+                      )}
+                      <ul className="space-y-0.5">
+                        {products.map(({ product, index }) => (
+                          <li
+                            key={product.slug}
+                            className="animate-rise"
+                            style={{ animationDelay: `${200 + index * 45}ms` }}
+                          >
+                            <a
+                              href={`#${product.slug}`}
+                              className="block rounded-md py-1.5 text-[13px] leading-snug text-ink-soft/80 transition-colors duration-200 hover:text-ink"
+                            >
+                              {product.name}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
               )}
             </li>
           );

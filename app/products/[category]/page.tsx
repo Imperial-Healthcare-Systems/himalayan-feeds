@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import PageShell, { PageHeader } from "@/components/PageShell";
 import CatalogueView from "@/components/catalogue/CatalogueView";
-import { CATEGORIES, getCategory } from "@/lib/site";
+import { CATEGORIES, getCategory, CATALOGUE_HEADER } from "@/lib/site";
 
 type Params = { params: Promise<{ category: string }> };
 
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Params) {
   const category = getCategory((await params).category);
   if (!category) return {};
   return {
-    title: `${category.name} — ${category.brand} | Himalayan Feeds`,
+    title: `${category.name} — ${category.animal} | Himalayan Feeds`,
     description: category.blurb,
   };
 }
@@ -31,11 +31,7 @@ export default async function CategoryPage({ params }: Params) {
 
   return (
     <PageShell>
-      <PageHeader
-        eyebrow="Our Products"
-        title="Cattle Feed & Poultry Feed"
-        sub="Two ranges available now, listed in the animal's own order — from its first weeks through to full production. Fish feed is in development."
-      />
+      <PageHeader {...CATALOGUE_HEADER} />
       <CatalogueView activeSlug={slug} />
     </PageShell>
   );

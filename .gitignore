@@ -35,3 +35,17 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 *.swp
+
+# archives — nothing in this repo should be a zip. public/images/products.zip
+# (17 MB) and public/videos.zip (210 MB) were both dropped into public/ by
+# accident, which meant they were being served to visitors. GitHub rejects any
+# single file over 100 MB outright, so the videos zip could never have been
+# pushed at all. Both are parked in source-assets/ locally.
+*.zip
+
+# unreferenced draft footage, ~187 MB across six files. Only
+# public/videos/himalayan-new-hero.mp4 is used (HeroVideo.tsx) and it is already
+# tracked. These are Firefly generations kept for review; committing them would
+# bloat every future clone for footage the site never loads. Delete them, or
+# force-add with `git add -f` if a specific one is genuinely wanted.
+public/videos/Firefly*.mp4

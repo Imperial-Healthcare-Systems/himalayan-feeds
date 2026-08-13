@@ -51,6 +51,7 @@ export default function EditProductPage() {
           initial={{
             name: product.name,
             category: product.category,
+            group: product.group,
             slug: product.slug,
             stage: product.stage,
             shortDescription: product.shortDescription,

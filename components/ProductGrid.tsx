@@ -7,9 +7,14 @@ import Reveal from "./Reveal";
 const TOTAL = CATEGORIES.reduce((n, c) => n + c.products.length, 0);
 
 /* ---------------- Product category grid ----------------
-   Four tiles: an "Our Categories" entry card followed by the three ranges.
-   All four land on the same catalogue page — the entry card opens it on the
-   first range, each category card opens it on its own. */
+   An "Our Categories" entry card followed by one tile per range. They all land
+   on the same catalogue page — the entry card opens it on the first range,
+   each category card opens it on its own.
+
+   Four columns for exactly four tiles — one clean row. This briefly went to
+   three when Sheep & Goat was a fourth range; it is a band inside Cattle Feed
+   now, so the count is back to four. If a range is ever added, revisit this:
+   five tiles at four columns strands one alone on a second row. */
 export default function ProductGrid() {
   return (
     /* Ramp step 2 — picks up TrustStrip's cream-deep/70 and lightens. Tallest
@@ -44,11 +49,18 @@ export default function ProductGrid() {
               className="group block rounded-2xl focus-visible:outline-offset-4"
             >
               <div className="sheen relative aspect-video overflow-hidden rounded-2xl border border-ink/10 bg-ink shadow-soft transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-lift">
-                {/* Accent blooms — one per range, in that range's colour */}
+                {/* Accent blooms — one per range, in that range's colour.
+                    Cattle, poultry, fish. Add one if a range is
+                    added, or the card quietly stops standing for all of them. */}
                 <div className="absolute -left-8 -top-10 h-32 w-32 rounded-full bg-terracotta opacity-30 blur-2xl animate-bloom" aria-hidden />
                 <div
                   className="absolute -right-6 -top-8 h-28 w-28 rounded-full bg-orange opacity-30 blur-2xl animate-bloom"
                   style={{ animationDelay: "1.5s" }}
+                  aria-hidden
+                />
+                <div
+                  className="absolute -right-8 bottom-0 h-24 w-24 rounded-full bg-leaf opacity-25 blur-2xl animate-bloom"
+                  style={{ animationDelay: "3s" }}
                   aria-hidden
                 />
                 {/* Mountain motif — x-deltas sum to the 1440 viewBox width */}
@@ -109,17 +121,34 @@ export default function ProductGrid() {
                   className="group block scroll-mt-28 rounded-2xl focus-visible:outline-offset-4"
                 >
                   <div className="sheen relative aspect-video overflow-hidden rounded-2xl border border-cream-deep bg-cream-deep shadow-soft transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-lift">
-                    <Image
-                      src={cat.image}
-                      alt={cat.imageAlt}
-                      fill
-                      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 23vw"
-                      /* Coming-soon ranges are desaturated so the difference
-                         reads at a glance, before the badge is even studied. */
-                      className={`object-cover transition-all duration-[900ms] ease-out group-hover:scale-[1.07] ${
-                        soon ? "saturate-[0.35] group-hover:saturate-100" : ""
-                      }`}
-                    />
+                    {/* A range with no photography of its own gets the ink
+                        ground and the mountain motif instead, so the card keeps
+                        its shape in the grid and the white brand label below
+                        still has something dark to sit on. */}
+                    {cat.image ? (
+                      <Image
+                        src={cat.image}
+                        alt={cat.imageAlt}
+                        fill
+                        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 23vw"
+                        /* Coming-soon ranges are desaturated so the difference
+                           reads at a glance, before the badge is even studied. */
+                        className={`object-cover transition-all duration-[900ms] ease-out group-hover:scale-[1.07] ${
+                          soon ? "saturate-[0.35] group-hover:saturate-100" : ""
+                        }`}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-ink" aria-hidden>
+                        <div className={`absolute -right-8 -top-10 h-40 w-40 rounded-full bg-gradient-to-br ${a.gradient} opacity-30 blur-2xl`} />
+                        <svg
+                          viewBox="0 0 1440 220"
+                          preserveAspectRatio="none"
+                          className="absolute inset-x-0 bottom-0 h-2/3 w-full text-white/[0.07]"
+                        >
+                          <path d="M0 220V150l150-78 110 56 160-100 140 88 150-70 160 92 150-72 150 76 270-52v130z" fill="currentColor" />
+                        </svg>
+                      </div>
+                    )}
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/55 to-transparent" aria-hidden />
                     {soon && (
                       <div className="absolute inset-0 bg-cream/35 transition-opacity duration-500 group-hover:opacity-0" aria-hidden />
@@ -132,7 +161,7 @@ export default function ProductGrid() {
                       {soon ? "Coming soon" : `${count} products`}
                     </span>
                     <span className="absolute bottom-3 left-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/85">
-                      {cat.brand}
+                      {cat.animal}
                     </span>
                   </div>
 

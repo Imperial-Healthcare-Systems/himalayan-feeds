@@ -4,7 +4,9 @@
    the token name (`bg-${accent}-light`) — that class will not exist at runtime.
 
    `gold` is deliberately absent: it belongs to TrustStrip and Certifications,
-   and reusing it here would blur "product range" into "credential". */
+   and reusing it here would blur "product range" into "credential". It was
+   briefly added for a Sheep & Goat range; that range is now a sub-category
+   band inside Cattle Feed and takes the cattle accent, so gold is free again. */
 export const ACCENT = {
   terracotta: {
     chip: "bg-orange-light text-terracotta-dark",

@@ -24,7 +24,6 @@ type Draft = {
   name: string;
   slug: string;
   animal: string;
-  brand: string;
   blurb: string;
   accent: AdminCategory["accent"];
   status: AdminCategory["status"];
@@ -35,7 +34,6 @@ const BLANK: Draft = {
   name: "",
   slug: "",
   animal: "",
-  brand: "",
   blurb: "",
   accent: "orange",
   status: "coming-soon",
@@ -65,8 +63,10 @@ export default function AdminCategoriesPage() {
 
   function openEdit(c: AdminCategory) {
     setDraft({
-      name: c.name, slug: c.slug, animal: c.animal, brand: c.brand,
-      blurb: c.blurb, accent: c.accent, status: c.status, image: c.image,
+      name: c.name, slug: c.slug, animal: c.animal,
+      /* The public record allows null — a live range with no photography yet.
+         The text input cannot hold null, so it round-trips through "". */
+      blurb: c.blurb, accent: c.accent, status: c.status, image: c.image ?? "",
     });
     setNameError(null);
     setEditing(c);
@@ -90,7 +90,14 @@ export default function AdminCategoriesPage() {
     }
 
     setBusy(true);
-    const payload = { ...draft, name, slug: draft.slug.trim() || slugify(name) };
+    const payload = {
+      ...draft,
+      name,
+      slug: draft.slug.trim() || slugify(name),
+      /* Back to null, so a cleared field means "no photography" rather than a
+         broken <Image src=""> on the public grid. */
+      image: draft.image.trim() || null,
+    };
 
     if (editing) {
       await updateCategory(editing.id, payload);
@@ -149,7 +156,7 @@ export default function AdminCategoriesPage() {
                 <div className="min-w-0 flex-1">
                   <p className="font-display font-700 text-[15px] text-ink">{c.name}</p>
                   <p className="text-[12px] text-ink-soft/85">
-                    {c.brand} · {c.animal}
+                    {c.animal}
                   </p>
                 </div>
                 {c.status === "coming-soon" ? (
@@ -227,16 +234,9 @@ export default function AdminCategoriesPage() {
               />
             </Field>
 
-            <Field label="Sub-brand" htmlFor="cat-b" hint="e.g. Godhenu Gold">
-              <input
-                id="cat-b"
-                className={inputCls}
-                value={draft.brand}
-                onChange={(e) => setDraft((d) => ({ ...d, brand: e.target.value }))}
-              />
-            </Field>
-
-            <Field label="Audience" htmlFor="cat-a" hint="e.g. For dairy cattle & buffalo" full>
+            {/* The "Sub-brand" field was removed with the invented sub-brands
+                it held. Audience is the range eyebrow now. */}
+            <Field label="Audience" htmlFor="cat-a" hint="Shown above the range title — e.g. Sheep &amp; Goats" full>
               <input
                 id="cat-a"
                 className={inputCls}

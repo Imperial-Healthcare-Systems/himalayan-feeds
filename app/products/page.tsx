@@ -1,11 +1,11 @@
 import PageShell, { PageHeader } from "@/components/PageShell";
 import CatalogueView from "@/components/catalogue/CatalogueView";
-import { CATEGORIES } from "@/lib/site";
+import { CATEGORIES, CATALOGUE_HEADER } from "@/lib/site";
 
 export const metadata = {
   title: "Products — Himalayan Feeds Pvt. Ltd.",
   description:
-    "Cattle feed and poultry feed from Himalayan Feeds. Dairy, calf and buffalo feed, broiler and layer feed, and nutritional supplements — listed in the animal's own order.",
+    "Cattle, poultry and sheep & goat feed from Himalayan Feeds. Calf, heifer, transition and milking feed for cows and buffalo, broiler and layer feed, and D. Mash dairy mash — listed in the animal's own order.",
 };
 
 /* ---------------- /products — catalogue home ----------------
@@ -18,11 +18,7 @@ export const metadata = {
 export default function ProductsPage() {
   return (
     <PageShell>
-      <PageHeader
-        eyebrow="Our Products"
-        title="Cattle Feed & Poultry Feed"
-        sub="Two ranges available now, listed in the animal's own order — from its first weeks through to full production. Fish feed is in development."
-      />
+      <PageHeader {...CATALOGUE_HEADER} />
       <CatalogueView activeSlug={CATEGORIES[0].slug} />
     </PageShell>
   );

@@ -3,18 +3,50 @@
 > **Status: partially built.** Levels 1 and 2 are live. See "What is built" below
 > for exactly what shipped and what is still proposal.
 
+> **Update — sub-categories.** A range can now be split into ordered bands
+> (`Category.groups` + `Product.group`, resolved by `groupedProducts`). Cattle
+> uses five: Young Stock → Transition → Milking Feed → Herd Supplements →
+> Sheep & Goat Feed. This is
+> a third level of *structure* without a third level of *routes* — the bands are
+> headings and anchors on the category page, not pages of their own, so §1.1's
+> reasoning about `/products/[category]/[product]` is untouched and still blocked
+> on specs. Ranges that declare no groups render exactly as before.
+>
+> **Update — sub-brands removed.** `Category.brand` is gone. Godhenu Gold, Nutri
+> Choice and Matsya Bandhu appeared on no bag the client has ever supplied, and
+> D. Mash is a product name rather than a range brand. The eyebrow above each
+> range title is now `Category.animal` — who the feed is for ("Cattle & Buffalo",
+> "Sheep & Goats", "Broilers & Layers"). **Every `brand:` line below is historical
+> and no longer reflects the code.** Broiler Grower Feed was also removed, so the
+> poultry sequence runs Pre Starter → Starter → Finisher.
+>
+> **Update — sheep & goat sits inside cattle.** The three D. Mash bags are a
+> band at the foot of Cattle Feed, not a range of their own. It was briefly a
+> fourth range; the client asked for it folded in, so there are three ranges
+> again and `gold` went back to being reserved for credentials per §1.6.
+> `Category.image` is still nullable and both `CatalogueView` and `ProductGrid`
+> still fall back to an accent panel, but no range uses null today.
+>
+> Note the trade this makes: a visitor looking for sheep or goat feed has to
+> open a page titled **Cattle Feed** to find it. The band heading, the product
+> copy and the range eyebrow ("Cattle, Buffalo, Sheep & Goats") all name the
+> species, and the `/products` H1 still reads "Cattle, Poultry & Sheep Feed" so
+> the term is indexable — but there is no `/products/sheep-goat-feed` URL to
+> rank. Promoting the band back to a range is a data move and nothing else.
+
 ## What is built
 
 | Shipped | Where |
 |---|---|
 | `/products` — catalogue home, opens on the first range | `app/products/page.tsx` |
 | `/products/[category]` — one per range, prerendered | `app/products/[category]/page.tsx` |
-| Left panel: categories + sub-categories, sticky | `components/catalogue/CategoryNav.tsx` |
+| Left panel: categories → sub-categories → products, sticky | `components/catalogue/CategoryNav.tsx` |
 | Right panel: range banner + product grid + empty state | `components/catalogue/CatalogueView.tsx` |
 | Product tile with pack shot, tag chip, copy, enquiry CTA | `components/catalogue/ProductCard.tsx` |
 | Accent lookup (Tailwind-safe, no interpolated classes) | `components/catalogue/accents.ts` |
-| 12 products across cattle and poultry | `lib/site.ts` |
-| 12 placeholder pack shots, 28 KB total | `public/images/products/*.svg` |
+| 18 products across cattle (incl. sheep & goat) and poultry | `lib/site.ts` |
+| Sub-category bands within a range (`groups` / `groupedProducts`) | `lib/site.ts`, `CatalogueView.tsx` |
+| 15 photographic pack shots, 4 illustrated placeholders | `public/images/products/` |
 | Motion primitives — rise, wipe, drift, bloom, sheen, link-rule | `app/globals.css` |
 | Homepage "Our Categories" entry card + 3 range cards | `components/ProductGrid.tsx` |
 
@@ -64,9 +96,9 @@ Three levels. All static, all prerendered — same as the six routes the site al
 ```
 /products                        BUILT — catalogue home, opens on Cattle Feed
 │
-├── /products/cattle-feed        BUILT — the Godhenu Gold range, 6 products
-├── /products/poultry-feed       BUILT — the Nutri Choice range, 6 products
-├── /products/fish-feed          BUILT — Matsya Bandhu, enquiry panel (no SKUs yet)
+├── /products/cattle-feed        BUILT — 12 products in 5 sub-category bands
+├── /products/poultry-feed       BUILT — 6 products
+├── /products/fish-feed          BUILT — enquiry panel (no SKUs yet)
 │
 └── /products/cattle-feed/calf-feed
                                  PROPOSED — per-product page, blocked on specs
@@ -276,7 +308,9 @@ categories takes one. **Nothing new is added to `@theme`.**
 
 `gold` stays free. It is already in use by `TrustStrip` and `Certifications`, so keeping
 it out of the category accents avoids a collision between "this is a product range" and
-"this is a credential".
+"this is a credential". It was briefly taken by a Sheep & Goat range; that range is a
+band inside Cattle Feed now and inherits `terracotta`, so the reservation holds. A
+fourth range needs a new token, not `gold`.
 
 Accent is stored **as a token name string on the category record**, not as a Tailwind
 class string. Tailwind v4 scans source for complete class names — `bg-${accent}-light`

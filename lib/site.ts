@@ -155,69 +155,170 @@ export const SOCIALS = [
    The catalogue renders them in array order and numbers them accordingly, so
    reordering this array reorders the page. Keep the sequence intact.
 
+   ---- SUB-CATEGORIES ----
+   `groups` splits a range into ordered sub-categories and `Product.group`
+   points at one. A range with a single group renders without headings, so
+   poultry and fish are unaffected. Grouping is presentational only — the flat
+   `products` array is still the source of truth for counts, ALL_PRODUCTS and
+   the admin store, and it stays in life-stage order so a range reads the same
+   whether or not its headings are drawn.
+
+   Cattle is grouped by what the feed DOES, not by species. The client asked
+   for a cow/buffalo split; the artwork does not support one. Every bag in the
+   current range is printed "BALANCED CATTLE FEED", pictures a buffalo AND a
+   cow, and is dosed "400G (COW) & 500G (BUFFALO)" — so a buffalo sub-category
+   would hold all seven bags and a cow sub-category would hold none. Buffalo
+   suitability is carried on each product instead, which is what the sack says.
+
+   The one exception is the fifth band, Sheep & Goat Feed. It is not a cattle
+   feed and does not pretend to be — it holds the three D. Mash bags, which are
+   printed for sheep and goats. It was briefly a top-level range of its own and
+   was folded in here at the client's explicit instruction. See the note on the
+   band itself for what that costs.
+
+   ---- TWO GENERATIONS OF ARTWORK ----
+   The bags supplied fall into two distinct brand systems, and the catalogue
+   currently shows both:
+
+     CURRENT  "HIMALAYAN FEEDS PVT. LTD." over a mountain mark, sub-headed
+              "BALANCED CATTLE FEED" and badged "FEED FOR PERFORMANCE".
+              Matches BRAND.legal and BRAND.phone. All seven cattle shots.
+     PREVIOUS "HIMALAYAN VALLEY FEEDS PVT. LTD." over an eagle roundel.
+              A different legal name. All poultry shots and all three D. Mash.
+
+   Cattle was moved to the current artwork; poultry and D. Mash have no
+   current-brand bag yet, so they still show the previous one. ⚠ Commission
+   poultry and D. Mash in the new system, or the catalogue will keep showing a
+   dealer two different companies. The superseded cattle shots are parked in
+   source-assets/superseded/ rather than deleted.
+
+   ---- D. MASH ARTWORK: THREE THINGS TO FIX ----
+   The copy for these three follows the SPECIES, not the strapline.
+
+   1. @5000 and @8000 were re-supplied in the current wordmark with the "FEED
+      FOR PERFORMANCE" badge, but the template was lifted from the cattle bags
+      and still reads "BALANCED CATTLE FEED" under the wordmark — directly above
+      a photograph of a sheep, a goat icon, and "A POWER PACKED DIET FOR SHEEP &
+      GOATS". Three species signals against one strapline, so the strapline is
+      the error. Get it corrected at the printer.
+   2. Those same two keep the OLD eagle roundel, which reads "HIMALAYAN VALLEY
+      FEEDS PVT. LTD." inside a bag whose wordmark says "HIMALAYAN FEEDS PVT.
+      LTD." — two legal names on one sack.
+   3. The base grade has not been re-supplied at all, so D. Mash still shows the
+      fully old artwork while the two grades above it show the new. The band
+      will not look like one family until all three match.
+
    ---- PACK SHOTS & NAMING ----
-   Ten entries carry a real cut-out photograph of the client's own bag, and
-   each one is NAMED AFTER THE BAG. A dealer reads the printed name, so a
+   Thirteen entries carry a real cut-out photograph of the client's own bag,
+   and each one is NAMED AFTER THE BAG. A dealer reads the printed name, so a
    catalogue that calls it something else is a catalogue they cannot order
    from. `name`, `slug` and the image filename all follow the artwork:
 
-     Calf Starter ....... calf-starter ..... CALF STARTER     25 kg
-     Calf Grower ........ calf-grower ...... CALF GROWER      25 kg
-     Heifer & Dry ....... heifer-and-dry ... HEIFER & DRY     50 kg
-     Transition ......... transition ....... TRANSITION       50 kg
-     10000+ ............. 10000-plus ....... 10000+           50 kg
-     Pre Starter ........ pre-starter ...... PRE STARTER      25 kg
-     Starter ............ starter .......... STARTER          25 kg
-     Finisher ........... finisher ......... FINISHER         25 kg
-     Layer Phase-1 ...... layer-phase-1 .... LAYER PHASE-1    50 kg
-     Layer Phase-2 ...... layer-phase-2 .... LAYER PHASE-2    50 kg
+     Calf Starter ....... calf-starter ..... CALF STARTER      50 kg
+     Calf Grower ........ calf-grower ...... CALF GROWER       50 kg
+     Heifer ............. heifer ........... HEIFER            — (see below)
+     Trans-20 Mix ....... trans-20-mix ..... TRANS - 20 Mix    50 kg
+     Gold 8000 .......... gold-8000 ........ GOLD 8000         50 kg
+     Gold 8000+ ......... gold-8000-plus ... GOLD 8000+        50 kg
+     10000 .............. 10000 ............ 10000             50 kg
+     Pre Starter ........ pre-starter ...... PRE STARTER       25 kg
+     Starter ............ starter .......... STARTER           25 kg
+     Finisher ........... finisher ......... FINISHER          25 kg
+     Layer Phase-1 ...... layer-phase-1 .... LAYER PHASE-1     50 kg
+     Layer Phase-2 ...... layer-phase-2 .... LAYER PHASE-2     50 kg
+     D. Mash ............ d-mash ........... D. MASH           25 kg
+     D. Mash @5000 ...... d-mash-5000 ...... D. MASH @5000     25 kg
+     D. Mash @8000 ...... d-mash-8000 ...... D. MASH @8000     25 kg
+
+   `packSizes` is read off the NET WEIGHT panel of the bag in the photograph.
+   It is the client's own artwork, not a guess, but it records the pack that
+   was photographed — if a size is also sold in another format, this field
+   needs widening. HEIFER is null because the supplied render is cropped above
+   the net-weight panel, not because the pack is unknown to the client.
+
+   ⚠ The new bags changed two pack sizes: CALF STARTER and CALF GROWER are
+   printed 50 kg, where the previous generation was 25 kg. Confirm which is
+   being filled today.
+
+   ---- WHAT THE NUMBERS MEAN ----
+   Nothing here claims 8000 / 10000 / @5000 / @8000 are litres, kilograms or
+   anything else. The bags print the figure inside a "FEED FOR PERFORMANCE"
+   badge and define it nowhere, so the copy treats them as grades on the
+   range's own ladder — which the naming already establishes — and stops there.
+   §2.6 of docs/product-catalogue-spec.md forbids the rest until confirmed.
 
    ---- COPY ----
-   Every description was rewritten against the artwork after the rename. For
-   the seven with a bag, `highlights` are now the bag's OWN printed benefit
-   bullets, so the site and the label a dealer is holding say the same thing —
-   no claim appears here that is not already printed on the sack. Two needed
-   more than a polish, because the rename made the old wording flatly untrue:
-   TRANSITION is a pre/post-calving feed, not the everyday milking ration the
-   old "Dairy Cattle Feed" text described; and PRE STARTER now heads the
-   broiler sequence, so it can no longer be positioned away from commercial
-   broilers. Claims that appear on no bag were dropped — "supports fat
-   percentage" and "mineral fortified" among them.
+   For every product with a bag, `highlights` are the bag's OWN printed benefit
+   bullets, so the site and the label a dealer is holding say the same thing.
+   All seven new cattle bags carry an identical five-bullet strip (HIGH QUALITY
+   INGREDIENTS · IMPROVES HEALTH & GROWTH · STRONG IMMUNITY, BETTER MILK YIELD ·
+   BETTER DIGESTION, MAXIMUM NUTRITION · MORE MILK, MORE PROFIT), so each
+   product takes the three that fit its job rather than repeating all five nine
+   times. Every phrase is printed on that specific sack.
 
-   `packSizes` for those seven is read off the NET WEIGHT panel of the bag in
-   the photograph. It is the client's own artwork, not a guess, but it records
-   the pack that was photographed — if a size is also sold in another format,
-   this field needs widening.
+   The remaining three (Cattle Feed Pellets & Mash, Mineral & Nutritional
+   Supplements, Poultry Nutritional Products) have NO corresponding bag. They
+   keep the client's own product-list names and a transparent illustrated
+   placeholder — there is no printed label to rename them after, and inventing
+   one would put a name on the site that no bag in the warehouse carries.
 
-   The remaining five (Buffalo Feed, Cattle Feed Pellets & Mash, Mineral &
-   Nutritional Supplements, Broiler Grower Feed, Poultry Nutritional Products)
-   have NO corresponding bag in the supplied artwork. They keep the client's
-   own product-list names and a transparent illustrated placeholder — there is
-   no printed label to rename them after, and inventing one would put a name on
-   the site that no bag in the warehouse carries.
-
-   ⚠ Unused artwork: three D. MASH bags — D. MASH, D. MASH @5000 and
-   D. MASH @8000, all printed "A POWER PACKED DIET FOR SHEEP & GOATS". That is
-   a whole fourth range for a species this site does not currently sell, so it
-   has no home in CATEGORIES. Decide whether Himalayan Feeds sells sheep and
-   goat feed; if it does, this needs its own category, not a cattle slot.
+   ---- REMOVED, AND WHY ----
+   Buffalo Feed .......... claimed a buffalo-specific formulation "not adapted
+                           from cattle feed". The current artwork contradicts
+                           it: one range, dosed for both animals.
+   Broiler Grower Feed ... removed at the client's instruction. Note this leaves
+                           the poultry sequence Pre Starter → Starter →
+                           Finisher, with the grower phase unrepresented; the
+                           `lifecycle` rail was shortened to match rather than
+                           advertise a stage with nothing behind it.
 
    ---- CUT-OUT PIPELINE ----
-   All ten were cut from the studio PNGs in source-assets/product_photos by a
-   4-connected flood fill seeded only from border pixels, threshold 250, with
-   a 10px distance-feathered edge. The threshold matters: the backdrop is
-   253-255 and the WHITE-BODIED bags (PRE STARTER, STARTER, FINISHER, both
-   LAYER PHASE bags) are 246-255, so a looser cut fills straight through the
-   sack and leaves a hollow shell that only looks right because the product
-   card behind it is near-white. Re-cut, don't loosen.
+   Every shot was cut from the studio PNG by a 4-connected flood fill seeded
+   ONLY from border pixels, with the image padded by a white ring first so a
+   single corner seed reaches the whole backdrop. Tolerance 8 against pure
+   white, then a 1px erode and a 0.8px blur for an antialiased edge. The
+   tolerance matters: the backdrop is 253-255 and the WHITE-BODIED bags (PRE
+   STARTER, STARTER, FINISHER, both LAYER PHASE bags, and the white top strip
+   on all seven new cattle bags) are 246-255, so a looser cut fills straight
+   through the sack and leaves a hollow shell that only looks right because the
+   product card behind it is near-white. Re-cut, don't loosen. Output is 900x1200
+   transparent WebP, ≤120 KB.
 
-   ⚠ Every bag is printed "HIMALAYAN VALLEY FEEDS PVT. LTD." and carries no
-   sub-brand. The `brand` strings below (Godhenu Gold, Nutri Choice) and
-   BRAND.legal appear on no artwork supplied so far — confirm before launch. */
+   ⚠ The new bags print "AN ISO 9001: 2026 CERTIFIED CO." — CERTIFICATIONS above
+   says ISO 9001:2015, and 2015 is the current revision of that standard. They
+   also print a second number, toll-free 7006111138, which appears nowhere on
+   the site. Both need resolving before launch.
+
+   ---- NO SUB-BRANDS ----
+   No bag carries a sub-brand, so the site no longer claims one. Godhenu Gold,
+   Nutri Choice and Matsya Bandhu appeared on no artwork ever supplied, and
+   were removed at the client's instruction along with the `brand` field that
+   held them. D. Mash went with them — it IS printed on the sack, but as the
+   product name, which is where it now appears; using it as a range brand made
+   the sheep and goat banner announce a product instead of a species.
+
+   Each range's eyebrow is now `animal` — who the feed is for. See the note on
+   that field. Do not reintroduce a brand line without a photograph of the bag
+   it is printed on. */
+
+/* ---------------- Sub-category ----------------
+   One band of a range. Ordered; `Category.groups` drives the sequence the
+   headings appear in, and products are listed under theirs in array order. */
+export type ProductGroup = {
+  slug: string;
+  name: string;
+  /** One line under the heading. Says what the band is for, not what it sells. */
+  note: string;
+};
 
 export type Product = {
   slug: string;
   name: string;
+  /** The `ProductGroup.slug` this product sits under. Required only on a range
+      that declares `groups`; there, it MUST match one of them or the product
+      drops out of the listing — `groupedProducts` iterates the groups, not the
+      products. Omitted on ungrouped ranges. */
+  group?: string;
   /** Where the product sits in the animal's cycle. Positional, not a spec. */
   stage: string;
   /** One line, shown under the name. */
@@ -243,8 +344,18 @@ export type Product = {
 export type Category = {
   slug: string;
   name: string;
+  /** Who the range is for, in the farmer's words — "Cattle, Buffalo, Sheep &
+      Goats", not "Bovine & Ovine". This is the eyebrow above the range title, on the
+      catalogue banner, the homepage tile, the header menu and the footer.
+
+      It replaced a `brand` field holding invented sub-brands (Godhenu Gold,
+      Nutri Choice, Matsya Bandhu, D. Mash). Three of the four appear on no
+      bag the client has supplied, so the site was announcing product lines
+      that do not exist on any sack a dealer can point at. Naming the animal
+      is both true and more useful — a farmer scans for their species, not for
+      a sub-brand they have never heard. If a REAL printed sub-brand ever
+      arrives, add it as a new field; do not overload this one. */
   animal: string;
-  brand: string;
   blurb: string;
   /** Range story on the catalogue page — two sentences under the H1. */
   intro: string;
@@ -257,9 +368,25 @@ export type Category = {
   status: "available" | "coming-soon";
   /** Shown on coming-soon ranges in place of the product list. */
   launchNote: string | null;
-  /** The animal's stages in order. Drives the sequence rail. */
+  /** The animal's stages in order. Drives the sequence rail. Empty hides it —
+      a range graded by performance rather than age has no sequence to show. */
   lifecycle: string[];
-  image: string;
+  /** Ordered sub-categories. EMPTY means the range is not sub-divided and its
+      products render as one flat sequence — which is what poultry and fish do.
+      Only add groups where a range is genuinely two or more
+      different jobs; grouping a six-product range into sixes of one is worse
+      than not grouping it. */
+  groups: ProductGroup[];
+  /** 16:9 range photograph. null renders the accent panel instead, for a range
+      that is live but has no photography yet. No range uses null today — the
+      branch is kept because the next one probably will, and because the
+      alternative is substituting another species' photo to fill the frame,
+      which is never the right answer.
+
+      A sheep photograph was supplied for the short-lived Sheep & Goat range and
+      is parked in source-assets/sheep.webp. Sheep and goats are a band inside
+      Cattle Feed now and bands are text headings, so it has no slot. */
+  image: string | null;
   imageAlt: string;
   products: Product[];
 };
@@ -269,106 +396,165 @@ export const CATEGORIES: Category[] = [
   {
     slug: "cattle-feed",
     name: "Cattle Feed",
-    animal: "For dairy cattle & buffalo",
-    brand: "Godhenu Gold",
+    /* Names all four species, because the range now carries a sheep and goat
+       band. The eyebrow is the only place a visitor learns that before they
+       have scrolled to it. */
+    animal: "Cattle, Buffalo, Sheep & Goats",
     accent: "terracotta",
     status: "available",
     launchNote: null,
-    lifecycle: ["Calf", "Growing calf", "Heifer & dry", "Transition", "Peak yield", "Herd-wide", "Add-on"],
+    lifecycle: ["Calf", "Growing calf", "Heifer", "Transition", "In milk", "Higher yield", "Peak yield"],
+    groups: [
+      {
+        slug: "young-stock",
+        name: "Young Stock",
+        note: "The animals earning nothing today. What they are fed now decides what they milk later.",
+      },
+      {
+        slug: "transition",
+        name: "Transition",
+        note: "The few weeks either side of calving, where a lactation is won or lost.",
+      },
+      {
+        slug: "milking",
+        name: "Milking Feed",
+        note: "Feed for Performance. Three grades on one ladder — step up as you ask more of the animal.",
+      },
+      {
+        slug: "supplements",
+        name: "Herd Supplements",
+        note: "Fed alongside the ration rather than in place of any part of it.",
+      },
+      /* Sheep and goats live inside the cattle range at the client's explicit
+         instruction, rather than as a range of their own. The band heading and
+         every product line say sheep and goats plainly, so a visitor is never
+         misled about the species — but note that a farmer filtering the site
+         for "sheep feed" has to open a page called Cattle Feed to find it. If
+         that ever costs an enquiry, the fix is to promote this band back to a
+         top-level range; the data moves, nothing else changes. */
+      {
+        slug: "sheep-goat",
+        name: "Sheep & Goat Feed",
+        note: "D. Mash — an energy-rich dairy mash for milking ewes and does, in three grades.",
+      },
+    ],
     blurb:
-      "Cattle feed for every stage — supporting milk production, herd health and strong, steady growth.",
+      "Feed for every stage of the dairy animal — plus a sheep and goat mash. Built for milk production, herd health and steady growth.",
     intro:
-      "A dairy animal converts feed into milk every single day, and the quality of that conversion is the whole business. The range follows the animal's own life — from her first weeks as a calf, through calving, and on into peak lactation.",
+      "A dairy animal converts feed into milk every single day, and the quality of that conversion is the whole business. The range follows the animal's own life — from her first weeks as a calf, through calving, and on into peak lactation. Every cattle bag is formulated for cows and buffalo alike, and dosed for both. The sheep and goat mash sits at the foot of the range.",
     image: "/images/cattle.webp",
     imageAlt: "Dairy cattle raised on Himalayan cattle feed",
     products: [
       {
         slug: "calf-starter",
         name: "Calf Starter",
+        group: "young-stock",
         stage: "Calf",
         summary: "Where it starts — the feed that shapes the animal she becomes.",
         description:
           "A calf's frame, her rumen and her immunity are all built in the first few months, and a heifer that grows well in that window reaches service weight sooner and milks better for it. Formulated to be easy to digest and palatable enough that intake starts early and holds steady right through weaning.",
-        highlights: ["Strong, even growth", "Bone development", "Better digestion"],
-        suitableFor: ["Calves", "Replacement heifers"],
+        highlights: ["Improves health & growth", "Better digestion", "Strong immunity"],
+        suitableFor: ["Calves", "Replacement heifers", "Cow & buffalo herds"],
         form: null,
-        packSizes: "25 kg",
+        packSizes: "50 kg",
         image: "/images/products/calf-starter.webp",
-        imageAlt: "Himalayan Feeds Calf Starter — premium calf feed, 25 kg bag",
+        imageAlt: "Himalayan Feeds Calf Starter — balanced cattle feed, 50 kg bag",
       },
       {
         slug: "calf-grower",
         name: "Calf Grower",
+        group: "young-stock",
         stage: "Growing calf",
         summary: "After the starter — the months that turn a calf into a heifer.",
         description:
           "Once the rumen is working properly the job changes from getting her eating to building the animal. Formulated for steady frame and bone development through the growing months, so she reaches the heifer stage the right size for her age instead of trying to catch up on it later.",
-        highlights: ["Strong growth & development", "Strong bones", "Supports immunity"],
-        suitableFor: ["Growing calves", "Replacement heifers"],
-        form: null,
-        packSizes: "25 kg",
-        image: "/images/products/calf-grower.webp",
-        imageAlt: "Himalayan Feeds Calf Grower — premium calf feed, 25 kg bag",
-      },
-      {
-        slug: "heifer-and-dry",
-        name: "Heifer & Dry",
-        stage: "Heifer & dry",
-        summary: "The animals earning nothing today — and building next year's lactation.",
-        description:
-          "A maiden heifer and a dry cow are the two animals on the farm that produce nothing this month, which is exactly why their ration is the first one to get cut. Both are building the next lactation. Formulated to hold body condition and support bone development and fertility, so heifers get in calf on time and dry cows calve down fit rather than fat.",
-        highlights: ["Good body condition", "Strong bones", "Better reproduction"],
-        suitableFor: ["Maiden heifers", "Dry cows"],
+        highlights: ["Improves health & growth", "High quality ingredients", "Strong immunity"],
+        suitableFor: ["Growing calves", "Replacement heifers", "Cow & buffalo herds"],
         form: null,
         packSizes: "50 kg",
-        image: "/images/products/heifer-and-dry.webp",
-        imageAlt: "Himalayan Feeds Heifer & Dry — premium feed for heifers and dry cows, 50 kg bag",
+        image: "/images/products/calf-grower.webp",
+        imageAlt: "Himalayan Feeds Calf Grower — balanced cattle feed, 50 kg bag",
       },
       {
-        slug: "transition",
-        name: "Transition",
+        slug: "heifer",
+        name: "Heifer",
+        group: "young-stock",
+        stage: "Heifer",
+        summary: "The last stretch before she calves — and the one most often cut.",
+        description:
+          "A maiden heifer produces nothing this month, which is exactly why her ration is the first one trimmed. She is building the animal that has to milk for the next several years. Formulated to hold condition and support frame and fertility, so she gets in calf on time and calves down fit rather than fat.",
+        highlights: ["Improves health & growth", "High quality ingredients", "Better digestion"],
+        suitableFor: ["Maiden heifers", "Replacement stock", "Cow & buffalo herds"],
+        form: null,
+        /* The supplied render is cropped above the net-weight panel. */
+        packSizes: null,
+        image: "/images/products/heifer.webp",
+        imageAlt: "Himalayan Feeds Heifer — balanced cattle feed bag",
+      },
+      {
+        slug: "trans-20-mix",
+        name: "Trans-20 Mix",
+        group: "transition",
         stage: "Transition",
         summary: "Around calving — the few weeks that decide the whole lactation.",
         description:
           "Appetite falls away in the days either side of calving, exactly when her demand is climbing fastest, and ground lost in that window is rarely made back later. Built to keep intake up through the changeover, so she walks into milk in condition instead of drawing on her own reserves to produce it.",
-        highlights: ["Improves feed intake", "Supports higher milk yield", "Holds body condition"],
-        suitableFor: ["Dry & freshly calved cows", "Dairy herds"],
-        form: null,
+        highlights: ["Better digestion", "Strong immunity, better milk yield", "Improves health & growth"],
+        suitableFor: ["Dry & freshly calved cows", "Buffalo at calving", "Dairy herds"],
+        form: "Mix",
         packSizes: "50 kg",
-        image: "/images/products/transition.webp",
-        imageAlt: "Himalayan Feeds Transition — premium transition feed, 50 kg bag",
+        image: "/images/products/trans-20-mix.webp",
+        imageAlt: "Himalayan Feeds Trans-20 Mix — balanced cattle feed, 50 kg bag",
       },
       {
-        slug: "10000-plus",
-        name: "10000+",
+        slug: "gold-8000",
+        name: "Gold 8000",
+        group: "milking",
+        stage: "In milk",
+        summary: "The everyday milking ration — where the ladder starts.",
+        description:
+          "The working feed for a herd in steady production, fed against the milk actually in the churn: the bag sets the rate at 400 g per litre for a cow and 500 g for a buffalo. It is the grade most herds sit on for most of the lactation, and the one the two above it are measured against.",
+        highlights: ["High quality ingredients", "More milk, more profit", "Better digestion"],
+        suitableFor: ["Dairy cows in milk", "Buffalo in milk", "Mixed herds"],
+        form: null,
+        packSizes: "50 kg",
+        image: "/images/products/gold-8000.webp",
+        imageAlt: "Himalayan Feeds Gold 8000 — balanced cattle feed, 50 kg bag",
+      },
+      {
+        slug: "gold-8000-plus",
+        name: "Gold 8000+",
+        group: "milking",
+        stage: "Higher yield",
+        summary: "One step up — for the animals pulling ahead of the herd.",
+        description:
+          "Most herds have a group doing noticeably more than the rest, and feeding them the same grade as everyone else quietly costs you the difference. The step up from Gold 8000, for cows and buffalo whose output has moved beyond what the base grade is built to carry.",
+        highlights: ["Strong immunity, better milk yield", "More milk, more profit", "High quality ingredients"],
+        suitableFor: ["Higher-yielding cows", "Higher-yielding buffalo"],
+        form: null,
+        packSizes: "50 kg",
+        image: "/images/products/gold-8000-plus.webp",
+        imageAlt: "Himalayan Feeds Gold 8000+ — balanced cattle feed, 50 kg bag",
+      },
+      {
+        slug: "10000",
+        name: "10000",
+        group: "milking",
         stage: "Peak yield",
-        summary: "At peak lactation — the densest ration in the range.",
+        summary: "The top of the ladder — the densest ration in the range.",
         description:
-          "A high-producing cow physically cannot eat enough volume to cover her own output, so the answer is a denser feed rather than a bigger scoop. Formulated for herds pushing for maximum milk, where yield has to be held right through the flush without the cow paying for it in condition or health.",
-        highlights: ["Nutrient dense", "Built for maximum milk", "Supports herd health"],
-        suitableFor: ["High-yield cows", "Crossbreds at flush"],
+          "A high-producing animal physically cannot eat enough volume to cover her own output, so the answer is a denser feed rather than a bigger scoop. The grade for herds pushing for maximum milk, where yield has to hold right through the flush without the animal paying for it in condition or health.",
+        highlights: ["More milk, more profit", "Maximum nutrition", "Strong immunity, better milk yield"],
+        suitableFor: ["High-yield cows", "High-yield buffalo", "Crossbreds at flush"],
         form: null,
         packSizes: "50 kg",
-        image: "/images/products/10000-plus.webp",
-        imageAlt: "Himalayan Feeds 10000+ — premium quality dairy feed, 50 kg bag",
-      },
-      {
-        slug: "buffalo-feed",
-        name: "Buffalo Feed",
-        stage: "Buffalo herd",
-        summary: "For buffalo — formulated for the animal, not adapted from cattle feed.",
-        description:
-          "Buffalo digest fibre and partition nutrients differently from crossbred cows, and a ration designed around one does not serve the other well. Built for buffalo herds, where the milk is paid on fat and the ration has to deliver it.",
-        highlights: ["Buffalo-specific formulation", "Supports butterfat", "Not a rebadged cow feed"],
-        suitableFor: ["Buffalo herds", "Fat-based milk pricing"],
-        form: null,
-        packSizes: null,
-        image: "/images/products/buffalo-feed.svg",
-        imageAlt: "Buffalo Feed pack",
+        image: "/images/products/10000.webp",
+        imageAlt: "Himalayan Feeds 10000 — balanced cattle feed, 50 kg bag",
       },
       {
         slug: "cattle-pellets-and-mash",
         name: "Cattle Feed Pellets & Mash",
+        group: "supplements",
         stage: "Herd-wide",
         summary: "Across the herd — the same nutrition, in whichever form your shed prefers.",
         description:
@@ -383,6 +569,7 @@ export const CATEGORIES: Category[] = [
       {
         slug: "cattle-mineral-supplements",
         name: "Mineral & Nutritional Supplements",
+        group: "supplements",
         stage: "Add-on",
         summary: "Alongside the ration — the minerals a home mix usually misses.",
         description:
@@ -394,6 +581,51 @@ export const CATEGORIES: Category[] = [
         image: "/images/products/cattle-mineral-supplements.svg",
         imageAlt: "Cattle mineral and nutritional supplements pack",
       },
+      {
+        slug: "d-mash",
+        name: "D. Mash",
+        group: "sheep-goat",
+        stage: "Base grade",
+        summary: "The base grade — the working ration for a milking flock.",
+        description:
+          "An energy-rich mash for sheep and goats in steady production, fed alongside grazing and whatever fodder the season provides. It is the grade most flocks sit on, and the one the two above it step up from.",
+        highlights: ["High energy", "High milk production", "Better digestion"],
+        suitableFor: ["Milking ewes & does", "Mixed sheep & goat flocks"],
+        form: "Mash",
+        packSizes: "25 kg",
+        image: "/images/products/d-mash.webp",
+        imageAlt: "Himalayan Feeds D. Mash — premium dairy mash for sheep and goats, 25 kg bag",
+      },
+      {
+        slug: "d-mash-5000",
+        name: "D. Mash @5000",
+        group: "sheep-goat",
+        stage: "Higher grade",
+        summary: "One step up — for the animals doing more than the flock average.",
+        description:
+          "Grazing and the base grade together will carry an average animal, but not the ones pulling ahead of it. The middle grade of the range, for ewes and does whose output has moved past what the everyday mash is built to cover.",
+        highlights: ["High energy", "High milk production", "Improves health"],
+        suitableFor: ["Higher-yielding ewes & does", "Dairy goat units"],
+        form: "Mash",
+        packSizes: "25 kg",
+        image: "/images/products/d-mash-5000.webp",
+        imageAlt: "Himalayan Feeds D. Mash @5000 — premium dairy mash for sheep and goats, 25 kg bag",
+      },
+      {
+        slug: "d-mash-8000",
+        name: "D. Mash @8000",
+        group: "sheep-goat",
+        stage: "Top grade",
+        summary: "The top grade — the densest mash in the range.",
+        description:
+          "A high-producing ewe or doe runs out of appetite long before she runs out of demand, so the ration has to carry more in the same volume. The grade for flocks pushing for maximum milk, where yield has to hold without the animal drawing on her own condition to keep it there.",
+        highlights: ["High energy", "High milk production", "Improves health"],
+        suitableFor: ["High-yield ewes & does", "Commercial dairy goat units"],
+        form: "Mash",
+        packSizes: "25 kg",
+        image: "/images/products/d-mash-8000.webp",
+        imageAlt: "Himalayan Feeds D. Mash @8000 — premium dairy mash for sheep and goats, 25 kg bag",
+      },
     ],
   },
 
@@ -401,12 +633,18 @@ export const CATEGORIES: Category[] = [
   {
     slug: "poultry-feed",
     name: "Poultry Feed",
-    animal: "For broilers & layers",
-    brand: "Nutri Choice",
+    animal: "Broilers & Layers",
     accent: "orange",
     status: "available",
     launchNote: null,
-    lifecycle: ["Chick", "Starter", "Grower", "Finisher", "Early lay", "Peak lay", "Add-on"],
+    /* No "Grower" — Broiler Grower Feed was removed and the rail must not
+       advertise a stage the range no longer covers. */
+    lifecycle: ["Chick", "Starter", "Finisher", "Early lay", "Peak lay", "Add-on"],
+    /* Ungrouped on purpose. A broiler/layer split is the obvious cut and the
+       structure now supports it, but Pre Starter is printed for broiler AND
+       layer chicks, so it would either be duplicated across both groups or
+       stranded in a third. Leave it flat until the client says which. */
+    groups: [],
     blurb:
       "Phase-by-phase poultry feed built around weight gain, feed conversion and egg quality.",
     intro:
@@ -441,20 +679,6 @@ export const CATEGORIES: Category[] = [
         packSizes: "25 kg",
         image: "/images/products/starter.webp",
         imageAlt: "Himalayan Feeds Starter — premium poultry feed, 25 kg bag",
-      },
-      {
-        slug: "broiler-grower-feed",
-        name: "Broiler Grower Feed",
-        stage: "Grower",
-        summary: "The middle stretch — where most of the bird actually gets built.",
-        description:
-          "The grower phase lays down the bulk of the skeleton and the muscle on it, and it is also where growth can outrun the legs and heart that have to carry it. Formulated to keep the bird moving quickly without pushing it past what its own frame can support.",
-        highlights: ["Frame development", "Controlled growth rate", "Steady intake"],
-        suitableFor: ["Commercial broiler units"],
-        form: null,
-        packSizes: null,
-        image: "/images/products/broiler-grower-feed.svg",
-        imageAlt: "Broiler Grower Feed pack",
       },
       {
         slug: "finisher",
@@ -522,17 +746,17 @@ export const CATEGORIES: Category[] = [
   {
     slug: "fish-feed",
     name: "Fish Feed",
-    animal: "Floating fish feed",
-    brand: "Matsya Bandhu",
+    animal: "Floating Fish Feed",
     accent: "leaf",
     status: "coming-soon",
     launchNote:
       "The fish feed range is in development and is not yet available to order. Register your interest and we will contact you the moment it launches.",
     lifecycle: ["Fry", "Fingerling", "Grow-out"],
+    groups: [],
     blurb:
       "Floating pellets with high digestibility that keep water clean and support steady, healthy fish growth.",
     intro:
-      "A floating pellet lets you see what the pond is actually eating, so feeding can be matched to appetite instead of guessed at. The Matsya Bandhu range is being developed for clean water and steady, predictable growth.",
+      "A floating pellet lets you see what the pond is actually eating, so feeding can be matched to appetite instead of guessed at. The range is being developed for clean water and steady, predictable growth.",
     image: "/images/fish.webp",
     imageAlt: "Fish in a pond raised on Himalayan fish feed",
     products: [],
@@ -550,8 +774,66 @@ export const AVAILABLE_CATEGORIES = CATEGORIES.filter(
   (c) => c.status === "available"
 );
 
+/* ---------------- Catalogue page header ----------------
+   /products and /products/[category] show the same title block, so it lives
+   here once rather than as the same string typed into two files. The range
+   count is DERIVED: it said "Two ranges available now" for a while after the
+   third went live, which is exactly the kind of line nobody thinks to update.
+   Add a range and this sentence corrects itself. */
+const RANGE_WORD = ["No", "One", "Two", "Three", "Four", "Five", "Six"];
+const LIVE_RANGES =
+  RANGE_WORD[AVAILABLE_CATEGORIES.length] ?? String(AVAILABLE_CATEGORIES.length);
+
+export const CATALOGUE_HEADER = {
+  eyebrow: "Our Products",
+  /* Names the species sold, not the ranges listed — sheep and goat feed is a
+     band inside Cattle Feed, and a farmer searching for it should still find
+     this page. */
+  title: "Cattle, Poultry & Sheep Feed",
+  sub: `${LIVE_RANGES} ranges available now, listed in the animal's own order — from its first weeks through to full production. Fish feed is in development.`,
+};
+
 export const getCategory = (slug: string) =>
   CATEGORIES.find((c) => c.slug === slug);
+
+/* ---------------- Products, in their sub-category bands ----------------
+   The one place grouping is resolved. Everything that lists a range's products
+   with headings goes through here, so the nav and the listing can never drift
+   into different orders.
+
+   An ungrouped range (`groups: []`) comes back as a single band with a null
+   group — callers render the products and skip the heading. A band that ends
+   up empty is dropped rather than rendered as a heading over nothing, which is
+   what happens if a group is declared before its products are written.
+
+   A product whose `group` matches no declared group is NOT dropped. It is
+   collected into a trailing unheaded band, so a typo costs you a heading and
+   not a product — the failure shows up as a row in the wrong place, which
+   someone notices, instead of a row that is simply absent, which nobody does.
+
+   Products keep their array order within a band, so life-stage order survives
+   grouping. `index` is the product's position in the whole range — the listing
+   numbers rows from it, so the count runs 01..09 across the range rather than
+   restarting at each heading and implying four separate sequences. */
+export function groupedProducts(category: Category) {
+  const bands: { group: ProductGroup | null; products: Product[] }[] =
+    category.groups.map((group) => ({
+      group,
+      products: category.products.filter((p) => p.group === group.slug),
+    }));
+
+  const placed = new Set(bands.flatMap((b) => b.products));
+  const rest = category.products.filter((p) => !placed.has(p));
+  if (rest.length > 0) bands.push({ group: null, products: rest });
+
+  let index = 0;
+  return bands
+    .filter((b) => b.products.length > 0)
+    .map((b) => ({
+      ...b,
+      products: b.products.map((product) => ({ product, index: index++ })),
+    }));
+}
 
 /* ---------------- Navigation — drives the header and footer ---------------- */
 export const NAV = [
