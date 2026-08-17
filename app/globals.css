@@ -54,6 +54,9 @@ body {
   }
 }
 
+/* Currently unreferenced. HeroVideo dropped it when the hero became a
+   four-shot clip that already moves on its own; kept because it is the right
+   treatment for any single, near-static full-bleed still. */
 @keyframes kenburns {
   0%   { transform: scale(1.08) translate(0,0); }
   100% { transform: scale(1.16) translate(-1.5%, -1.5%); }

@@ -68,9 +68,13 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: "/images/himalayan-new-hero-poster.webp",
-        width: 1440,
-        height: 810,
+        /* Frame 0 of the hero clip, so a shared link previews as the page the
+           visitor then lands on. Keep width/height in step with the file —
+           WhatsApp and LinkedIn lay the card out from these numbers before
+           the image itself has loaded. */
+        url: "/images/himalayan-hero-ranges-poster.webp",
+        width: 1600,
+        height: 900,
         alt: `${BRAND.full} — cattle and poultry feed`,
       },
     ],
@@ -79,7 +83,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${BRAND.legal} — ${BRAND.tagline}`,
     description: BRAND.descriptor,
-    images: ["/images/himalayan-new-hero-poster.webp"],
+    images: ["/images/himalayan-hero-ranges-poster.webp"],
   },
   robots: { index: true, follow: true },
   icons: { icon: "/favicon.ico" },

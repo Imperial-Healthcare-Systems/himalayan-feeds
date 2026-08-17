@@ -43,9 +43,17 @@ Thumbs.db
 # pushed at all. Both are parked in source-assets/ locally.
 *.zip
 
-# unreferenced draft footage, ~187 MB across six files. Only
-# public/videos/himalayan-new-hero.mp4 is used (HeroVideo.tsx) and it is already
-# tracked. These are Firefly generations kept for review; committing them would
-# bloat every future clone for footage the site never loads. Delete them, or
-# force-add with `git add -f` if a specific one is genuinely wanted.
+# unreferenced draft footage, ~187 MB across six files. These are Firefly
+# generations kept for review; committing them would bloat every future clone
+# for footage the site never loads. Delete them, or force-add with
+# `git add -f` if a specific one is genuinely wanted.
 public/videos/Firefly*.mp4
+
+# delivery master for the hero, 32 MB at 25 Mbps. The site loads the 4.2 MB
+# re-encode public/videos/himalayan-hero-ranges.mp4 (HeroVideo.tsx), which is
+# tracked. Keeping the master out of git is the point of the re-encode — but
+# keep the file locally, because it is what any future re-crop or re-grade
+# has to start from. Regenerate the web copy with:
+#   ffmpeg -i new_video.mp4 -c:v libx264 -preset slow -crf 27 -profile:v high \
+#     -pix_fmt yuv420p -an -movflags +faststart himalayan-hero-ranges.mp4
+public/videos/new_video.mp4
