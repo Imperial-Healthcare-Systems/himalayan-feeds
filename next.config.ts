@@ -40,17 +40,40 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        /* Fingerprinted build output and the media we never re-cut under the
-           same name — safe to cache hard. */
+        /* Hand-named media. NOT fingerprinted — that is the whole point.
+           /_next/static gets content hashes and Next already marks it
+           immutable on its own; nothing under /images or /videos does.
+
+           ⚠ This was `max-age=31536000, immutable` on the stated assumption
+           that nothing here is ever re-cut under the same name. That
+           assumption did not survive contact: the pack shots were replaced
+           from new artwork, and the hero banner twice in one afternoon.
+           `immutable` tells the browser never to revalidate, so a returning
+           visitor keeps the old file for a YEAR and no amount of deploying
+           reaches them — the only escape is renaming the asset.
+
+           So: still cached hard, but revalidating.
+           stale-while-revalidate serves the cached copy instantly and
+           refreshes it in the background, which keeps the speed and drops the
+           trap. If something here truly is permanent, put a version in its
+           filename rather than reaching for `immutable` again. */
         source: "/images/:path*",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=2592000",
+          },
         ],
       },
       {
+        /* Longer, because a 4 MB clip is expensive to re-fetch and changes far
+           less often than a pack shot — but revalidating for the same reason. */
         source: "/videos/:path*",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, stale-while-revalidate=2592000",
+          },
         ],
       },
     ];
