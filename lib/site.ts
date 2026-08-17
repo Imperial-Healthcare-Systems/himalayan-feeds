@@ -202,10 +202,15 @@ export const SOCIALS = [
 
    Cattle is grouped by what the feed DOES, not by species. The client asked
    for a cow/buffalo split; the artwork does not support one. Every bag in the
-   current range is printed "BALANCED CATTLE FEED", pictures a buffalo AND a
-   cow, and is dosed "400G (COW) & 500G (BUFFALO)" — so a buffalo sub-category
-   would hold all seven bags and a cow sub-category would hold none. Buffalo
-   suitability is carried on each product instead, which is what the sack says.
+   range is printed "BALANCED CATTLE FEED" and dosed "400G (COW) & 500G
+   (BUFFALO)" — so a buffalo sub-category would hold every bag and a cow
+   sub-category would hold none. Buffalo suitability is carried on each product
+   instead, which is what the sack says.
+
+   ⚠ The latest artwork (hF_products) drops the buffalo from the photograph —
+   the earlier renders pictured a buffalo beside a cow, these show cows only.
+   The printed dosage line still covers both, so the reasoning above holds, but
+   a farmer buying for buffalo now sees no buffalo on the bag. Worth raising.
 
    The one exception is the fifth band, Sheep & Goat Feed. It is not a cattle
    feed and does not pretend to be — it holds the three D. Mash bags, which are
@@ -249,14 +254,21 @@ export const SOCIALS = [
    Thirteen entries carry a real cut-out photograph of the client's own bag,
    and each one is NAMED AFTER THE BAG. A dealer reads the printed name, so a
    catalogue that calls it something else is a catalogue they cannot order
-   from. `name`, `slug` and the image filename all follow the artwork:
+   from. `name`, `slug` and the image filename all follow the artwork.
+
+   ⚠ `name` is the PRINTED name and is not what the site displays. Products are
+   shown brand-first — "Himalayan Gold 8000" — via `productName()` further down
+   this file. The table below is the sack, not the screen; keep it that way so
+   there is always one record of what a dealer is actually holding.
 
      Calf Starter ....... calf-starter ..... CALF STARTER      50 kg
      Calf Grower ........ calf-grower ...... CALF GROWER       50 kg
-     Heifer ............. heifer ........... HEIFER            — (see below)
-     Trans-20 Mix ....... trans-20-mix ..... TRANS - 20 Mix    50 kg
+     Heifer ............. heifer ........... HEIFER            50 kg
+     Transition Mix ..... transition-mix ... TRANSITION DRY /
+                                            TRANS - 20 Mix    50 kg  ⚠ renamed
+     8000 ............... 8000 ............. 8000              50 kg
      Gold 8000 .......... gold-8000 ........ GOLD 8000         50 kg
-     Gold 8000+ ......... gold-8000-plus ... GOLD 8000+        50 kg
+     8000+ .............. 8000-plus ........ 8000+             50 kg
      10000 .............. 10000 ............ 10000             50 kg
      Pre Starter ........ pre-starter ...... PRE STARTER       25 kg
      Starter ............ starter .......... STARTER           25 kg
@@ -270,8 +282,32 @@ export const SOCIALS = [
    `packSizes` is read off the NET WEIGHT panel of the bag in the photograph.
    It is the client's own artwork, not a guess, but it records the pack that
    was photographed — if a size is also sold in another format, this field
-   needs widening. HEIFER is null because the supplied render is cropped above
-   the net-weight panel, not because the pack is unknown to the client.
+   needs widening.
+
+   ---- THE hF_products DROP ----
+   A later set of eight photographs replaced most of the cattle shots. Five
+   were straight swaps (Calf Starter, Heifer, Transition Mix, Gold 8000, 10000)
+   and HEIFER finally arrived uncropped, which is where its 50 kg came from.
+
+   Two were NOT in the catalogue at all and were added on the client's
+   instruction: 8000, which is a distinct bag from GOLD 8000 — same design,
+   different grade badge — and 8000+, which replaced the orange GOLD 8000+.
+   Note that rename: the live bag is green and prints "8000+" with no "GOLD",
+   so the product was renamed to match the sack rather than the other way
+   round. The orange bag is in source-assets/superseded/.
+
+   The eighth, D. MASH @8000, was left unused: it is the OLDER template — big
+   product name, no wordmark, no "Feed for Performance" badge — so swapping it
+   in would have walked the range backwards. It is in source-assets/hf_products
+   with the rest of the drop.
+
+   ⚠ 8000+ is the only pack shot cut from a photograph of a physical bag on a
+   concrete floor rather than a studio render. A border-seeded flood fill
+   cannot separate it — the floor runs as a tonal gradient and the bag's
+   shadowed green edges sit closer to the floor than the floor's own range — so
+   it was cut by modelling the floor colour per row and then requiring
+   connectivity to the border. If it is ever re-cut, do not reach for the
+   flood fill; it will eat the bag.
 
    ⚠ The new bags changed two pack sizes: CALF STARTER and CALF GROWER are
    printed 50 kg, where the previous generation was 25 kg. Confirm which is
@@ -376,6 +412,22 @@ export type Product = {
   packSizes: string | null;
   image: string;
   imageAlt: string;
+  /** True where `image` is the illustrated placeholder rather than a
+      photograph of the actual sack. The row badges the frame so a visitor
+      reads "we haven't shot this yet" instead of "this is what it looks
+      like".
+
+      ⚠ This is a statement about the PHOTOGRAPH, not about availability —
+      hence the badge wording "Photo coming soon". Do not reuse this flag to
+      mean the product is unreleased; that is `Category.status` at range
+      level, and at product level it would need its own field, because these
+      three may well be selling today. See docs/product-catalogue-spec.md
+      §2.6 — an unconfirmed fact is left visibly open, never guessed at.
+
+      Set it explicitly rather than sniffing for `.svg`: the flag has to
+      survive a placeholder being redrawn as a PNG, and it is the thing the
+      client is actually being asked to resolve. */
+  photoPending?: boolean;
 };
 
 export type Category = {
@@ -523,14 +575,21 @@ export const CATEGORIES: Category[] = [
         highlights: ["Improves health & growth", "High quality ingredients", "Better digestion"],
         suitableFor: ["Maiden heifers", "Replacement stock", "Cow & buffalo herds"],
         form: null,
-        /* The supplied render is cropped above the net-weight panel. */
-        packSizes: null,
+        /* Was null while the only render was cropped above the net-weight
+           panel. The hF_products artwork shows the full bag: 50 kg. */
+        packSizes: "50 kg",
         image: "/images/products/heifer.webp",
         imageAlt: "Himalayan Feeds Heifer — balanced cattle feed bag",
       },
       {
-        slug: "trans-20-mix",
-        name: "Trans-20 Mix",
+        /* ⚠ The one product NOT named after its bag. The sack prints
+           "TRANSITION DRY" as a headline with "TRANS - 20 Mix" in the badge
+           below it; the client asked for "Transition Mix", which is neither
+           string exactly. Their call — they know what a dealer orders it by —
+           but if a dealer ever searches the site for "Trans-20" and finds
+           nothing, this is why. */
+        slug: "transition-mix",
+        name: "Transition Mix",
         group: "transition",
         stage: "Transition",
         summary: "Around calving — the few weeks that decide the whole lactation.",
@@ -540,17 +599,37 @@ export const CATEGORIES: Category[] = [
         suitableFor: ["Dry & freshly calved cows", "Buffalo at calving", "Dairy herds"],
         form: "Mix",
         packSizes: "50 kg",
-        image: "/images/products/trans-20-mix.webp",
-        imageAlt: "Himalayan Feeds Trans-20 Mix — balanced cattle feed, 50 kg bag",
+        image: "/images/products/transition-mix.webp",
+        imageAlt: "Himalayan Feeds Transition Dry, Trans-20 Mix — balanced cattle feed, 50 kg bag",
+      },
+      {
+        /* ⚠ LADDER ORDER IS AN ASSUMPTION. The four milking bags are printed
+           8000, GOLD 8000, 8000+ and 10000, and none of them says where it sits
+           relative to the others. They are listed cheapest-sounding first, with
+           GOLD read as a premium of the 8000 grade. Confirm the real order — a
+           dealer selling "the next one up" off this page needs it right. */
+        slug: "8000",
+        name: "8000",
+        group: "milking",
+        stage: "In milk",
+        summary: "The everyday milking ration — where the ladder starts.",
+        description:
+          "The working feed for a herd in steady production, fed against the milk actually in the churn: the bag sets the rate at 400 g per litre for a cow and 500 g for a buffalo. It is the grade most herds sit on for most of the lactation, and the base the rest of the range is measured from.",
+        highlights: ["High quality ingredients", "Better digestion", "More milk, more profit"],
+        suitableFor: ["Dairy cows in milk", "Buffalo in milk", "Mixed herds"],
+        form: null,
+        packSizes: "50 kg",
+        image: "/images/products/8000.webp",
+        imageAlt: "Himalayan Feeds 8000 — balanced cattle feed, 50 kg bag",
       },
       {
         slug: "gold-8000",
         name: "Gold 8000",
         group: "milking",
         stage: "In milk",
-        summary: "The everyday milking ration — where the ladder starts.",
+        summary: "The Gold grade, at the same feeding rate.",
         description:
-          "The working feed for a herd in steady production, fed against the milk actually in the churn: the bag sets the rate at 400 g per litre for a cow and 500 g for a buffalo. It is the grade most herds sit on for most of the lactation, and the one the two above it are measured against.",
+          "Fed on the same measure as 8000 — 400 g per litre for a cow, 500 g for a buffalo — for the same stage of the lactation. What separates the two is the formulation rather than the feeding, so ask us which suits your herd before you switch between them.",
         highlights: ["High quality ingredients", "More milk, more profit", "Better digestion"],
         suitableFor: ["Dairy cows in milk", "Buffalo in milk", "Mixed herds"],
         form: null,
@@ -559,19 +638,19 @@ export const CATEGORIES: Category[] = [
         imageAlt: "Himalayan Feeds Gold 8000 — balanced cattle feed, 50 kg bag",
       },
       {
-        slug: "gold-8000-plus",
-        name: "Gold 8000+",
+        slug: "8000-plus",
+        name: "8000+",
         group: "milking",
         stage: "Higher yield",
         summary: "One step up — for the animals pulling ahead of the herd.",
         description:
-          "Most herds have a group doing noticeably more than the rest, and feeding them the same grade as everyone else quietly costs you the difference. The step up from Gold 8000, for cows and buffalo whose output has moved beyond what the base grade is built to carry.",
+          "Most herds have a group doing noticeably more than the rest, and feeding them the same grade as everyone else quietly costs you the difference. The step up for cows and buffalo whose output has moved beyond what the base grade is built to carry.",
         highlights: ["Strong immunity, better milk yield", "More milk, more profit", "High quality ingredients"],
         suitableFor: ["Higher-yielding cows", "Higher-yielding buffalo"],
         form: null,
         packSizes: "50 kg",
-        image: "/images/products/gold-8000-plus.webp",
-        imageAlt: "Himalayan Feeds Gold 8000+ — balanced cattle feed, 50 kg bag",
+        image: "/images/products/8000-plus.webp",
+        imageAlt: "Himalayan Feeds 8000+ — balanced cattle feed, 50 kg bag",
       },
       {
         slug: "10000",
@@ -601,7 +680,9 @@ export const CATEGORIES: Category[] = [
         form: "Pellet or mash",
         packSizes: null,
         image: "/images/products/cattle-pellets-and-mash.svg",
-        imageAlt: "Cattle Feed Pellets and Mash pack",
+        imageAlt:
+          "Illustrated placeholder — no pack photograph for Cattle Feed Pellets and Mash yet",
+        photoPending: true,
       },
       {
         slug: "cattle-mineral-supplements",
@@ -616,7 +697,9 @@ export const CATEGORIES: Category[] = [
         form: null,
         packSizes: null,
         image: "/images/products/cattle-mineral-supplements.svg",
-        imageAlt: "Cattle mineral and nutritional supplements pack",
+        imageAlt:
+          "Illustrated placeholder — no pack photograph for Mineral and Nutritional Supplements yet",
+        photoPending: true,
       },
       {
         slug: "d-mash",
@@ -771,7 +854,9 @@ export const CATEGORIES: Category[] = [
         form: null,
         packSizes: null,
         image: "/images/products/poultry-nutritional-products.svg",
-        imageAlt: "Poultry nutritional products pack",
+        imageAlt:
+          "Illustrated placeholder — no pack photograph for Poultry Nutritional Products yet",
+        photoPending: true,
       },
     ],
   },
@@ -832,6 +917,24 @@ export const CATALOGUE_HEADER = {
 
 export const getCategory = (slug: string) =>
   CATEGORIES.find((c) => c.slug === slug);
+
+/* ---------------- Display name ----------------
+   Every product is shown brand-first — "Himalayan D. Mash", not "D. Mash".
+
+   The prefix is applied HERE rather than baked into `Product.name`, and that
+   distinction is deliberate. `name` records what is printed on the sack, which
+   is the rule the whole catalogue is built on and what the naming table at the
+   top of this file documents; a dealer reads the bag, and the bag says
+   "GOLD 8000". Editing the stored names to "Himalayan Gold 8000" would quietly
+   make that table false and leave nothing recording the printed name.
+
+   So the sack keeps its name, the site adds the brand, and dropping or changing
+   the prefix later is one line here instead of eighteen edits.
+
+   `BRAND.name` is the short form ("Himalayan"); BRAND.full would read
+   "Himalayan Feeds D. Mash", which doubles the word on a bag already headed
+   HIMALAYAN FEEDS PVT. LTD. */
+export const productName = (p: Product) => `${BRAND.name} ${p.name}`;
 
 /* ---------------- Products, in their sub-category bands ----------------
    The one place grouping is resolved. Everything that lists a range's products

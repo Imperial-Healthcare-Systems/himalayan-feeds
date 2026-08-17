@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CATEGORIES, BRAND, groupedProducts } from "@/lib/site";
+import { CATEGORIES, BRAND, groupedProducts, productName } from "@/lib/site";
 import { ACCENT } from "./accents";
 
 /* ---------------- Left panel — categories and their sub-categories ----------------
@@ -87,7 +87,7 @@ export default function CategoryNav({ activeSlug }: { activeSlug: string }) {
                               href={`#${product.slug}`}
                               className="block rounded-md py-1.5 text-[13px] leading-snug text-ink-soft/80 transition-colors duration-200 hover:text-ink"
                             >
-                              {product.name}
+                              {productName(product)}
                             </a>
                           </li>
                         ))}

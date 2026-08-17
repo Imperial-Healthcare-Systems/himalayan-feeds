@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BRAND, CATEGORIES, type Category } from "@/lib/site";
+import { BRAND, CATEGORIES, productName, type Category } from "@/lib/site";
 import CountUp from "../CountUp";
 import { ACCENT } from "./accents";
 
@@ -105,7 +105,7 @@ export function CoverageRail({ category }: { category: Category }) {
 export function QuoteBlock({ category }: { category: Category }) {
   const a = ACCENT[category.accent];
   const soon = category.status === "coming-soon";
-  const names = category.products.map((p) => `• ${p.name}`).join("\n");
+  const names = category.products.map((p) => `• ${productName(p)}`).join("\n");
 
   /* A coming-soon range cannot be quoted, so asking for quantity and pricing
      would be a dead end. It collects an interest registration instead. */

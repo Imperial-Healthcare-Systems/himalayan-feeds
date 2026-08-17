@@ -1,11 +1,11 @@
-import { BRAND, type Product } from "@/lib/site";
+import { BRAND, productName, type Product } from "@/lib/site";
 import { ACCENT, type AccentKey } from "./accents";
 
 /* Builds a structured RFQ rather than a bare "I'm interested" — the reply
    is only useful if the enquiry already carries quantity and location. */
 function quoteHref(product: Product, categoryName: string) {
   const body = [
-    `Quote request — ${product.name}`,
+    `Quote request — ${productName(product)}`,
     `Range: ${categoryName}`,
     "",
     "Quantity required:",
@@ -97,9 +97,24 @@ export default function ProductRow({
             aria-hidden
             className="pointer-events-none absolute bottom-[6%] left-1/2 h-2.5 w-[44%] -translate-x-1/2 rounded-[50%] bg-ink/25 blur-md transition-all duration-700 ease-out group-hover:w-[54%] group-hover:bg-ink/18 group-hover:blur-lg"
           />
-          {/* eslint-disable-next-line @next/next/no-img-element -- five ranges
-              still use SVG placeholders, and next/image refuses SVG without
-              dangerouslyAllowSVG. Swap to <Image> once all twelve are photos. */}
+          {/* Placeholder badge. Three products have no bag to photograph, so
+              the frame shows an illustrated icon; unlabelled, that reads as a
+              broken image rather than a deliberate gap.
+
+              It says "Photo" on purpose. A bare "Coming soon" over a product
+              frame is a statement about STOCK, and nobody has told us these
+              three are unavailable — they are on the client's own product
+              list. Naming the photograph is the only version of this badge
+              that is certainly true. */}
+          {product.photoPending && (
+            <span className="absolute left-2.5 top-2.5 z-10 rounded-full border border-ink/10 bg-white/85 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.1em] text-ink-soft/65 shadow-soft backdrop-blur-sm">
+              Photo coming soon
+            </span>
+          )}
+          {/* eslint-disable-next-line @next/next/no-img-element -- the three
+              products above still use SVG placeholders, and next/image refuses
+              SVG without dangerouslyAllowSVG. Swap to <Image> once every
+              product is a photograph. */}
           <img
             src={product.image}
             alt={product.imageAlt}
@@ -127,7 +142,7 @@ export default function ProductRow({
                 </span>
               </div>
               <Heading className="mt-2.5 font-display font-700 text-xl leading-tight text-ink sm:text-[22px]">
-                {product.name}
+                {productName(product)}
               </Heading>
               <span
                 className={`mt-2.5 block h-[3px] w-9 rounded-full origin-left transition-transform duration-500 ease-out group-hover:scale-x-[2] ${a.rule}`}

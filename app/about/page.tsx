@@ -5,7 +5,7 @@ import BrandLockup from "@/components/BrandLockup";
 import Leadership from "@/components/Leadership";
 import CountUp from "@/components/CountUp";
 import Reveal from "@/components/Reveal";
-import { BRAND, COMPANY, CATEGORIES, AVAILABLE_CATEGORIES } from "@/lib/site";
+import { BRAND, COMPANY, CATEGORIES, AVAILABLE_CATEGORIES, productName } from "@/lib/site";
 
 export const metadata = {
   title: "About Us — Himalayan Feeds Pvt. Ltd.",
@@ -179,7 +179,7 @@ export default function AboutPage() {
                         </div>
                         {c.products.length > 0 && (
                           <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-soft/70">
-                            {c.products.map((p) => p.name).join(" · ")}
+                            {c.products.map(productName).join(" · ")}
                           </p>
                         )}
                       </li>
