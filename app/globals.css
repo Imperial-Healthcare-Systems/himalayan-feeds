@@ -54,7 +54,7 @@ body {
   }
 }
 
-/* Currently unreferenced. HeroVideo dropped it when the hero became a
+/* Currently unreferenced. HeroCarousel dropped it when the hero became a
    four-shot clip that already moves on its own; kept because it is the right
    treatment for any single, near-static full-bleed still. */
 @keyframes kenburns {
