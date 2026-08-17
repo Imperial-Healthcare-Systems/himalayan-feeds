@@ -67,10 +67,21 @@ const FRAMING = "object-[50%_50%]";
    Rebuild it from source-assets/hero/hero_image.png, never from the padded
    file — padding the padding compounds.
 
-   This is a stopgap. The real fix is artwork drawn at 2560x1100 (2.33:1) with
-   everything that must survive inside the central 2200x940, plus a portrait
-   crop for under 640px, where a 2.7:1 image loses most of its width whatever
-   we do. */
+   Padding only rescues the WIDE frames. Under xl the hero is far taller than
+   2.7:1 and no amount of side padding helps, so that range is contained on a
+   blurred backdrop instead — see the banner slide below.
+
+   This is all a stopgap for artwork that does not exist yet. The real set is
+   three files, each drawn to its own frame with the scene painted to all four
+   edges and nothing important outside the safe zone:
+
+     wide     2560x960   (2.67:1)   safe 1920x940    xl and up
+     tablet   1600x1840  (0.87:1)   safe 1500x1760   640-1279px
+     phone    1200x1850  (0.65:1)   safe 1050x1540   under 640px
+
+   The portrait two are a re-layout, not a crop — nine bags in a row cannot be
+   cropped narrow, they have to be restacked. When they land, serve them with
+   srcset and delete the padding and the blur. */
 export default function HeroCarousel({ children }: { children: ReactNode }) {
   /* Starts "poster" so the first client render matches the server-rendered
      markup exactly (no hydration mismatch); the effect upgrades post-hydration
@@ -184,13 +195,32 @@ export default function HeroCarousel({ children }: { children: ReactNode }) {
               onBanner ? "opacity-100" : "opacity-0"
             }`}
           >
+            {/* Below xl the frame is simply too tall for a 2.7:1 banner.
+                Filling it means cropping to the width of the frame, and at
+                these shapes that leaves 29% of the design on a phone and 45%
+                on a tablet — the logo, the phone strip and most of the lineup
+                gone. Re-centring does not help; it is already centred, and a
+                better-placed third of a banner is still a third of a banner.
+
+                So under xl the whole banner is shown, contained, with a
+                blurred over-scaled copy filling the frame behind it. Same
+                file, one download, no letterbox bars. It is small, but it is
+                all there. From xl up the frame is wide enough that cover
+                shows 100% of the design, so it fills properly. */}
             {/* eslint-disable-next-line @next/next/no-img-element -- same
                 reasoning as the poster above. */}
             <img
               src={BANNER_SRC}
               alt=""
               aria-hidden="true"
-              className={cover}
+              className={`${cover} scale-110 blur-2xl xl:hidden`}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element -- ditto. */}
+            <img
+              src={BANNER_SRC}
+              alt=""
+              aria-hidden="true"
+              className={`absolute inset-0 h-full w-full object-contain ${FRAMING} xl:object-cover`}
             />
           </div>
         </>
