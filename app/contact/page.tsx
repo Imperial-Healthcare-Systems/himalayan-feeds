@@ -133,7 +133,24 @@ export default function ContactPage() {
                         </>
                       ),
                     },
-                    { k: "Speak to", v: `${BRAND.contactPerson} — Director` },
+                    /* Second address, directly under the first. A dealer
+                       working out freight needs to know the bags leave Punjab,
+                       not Budgam — burying that anywhere else on the page
+                       would be a choice, and the wrong one. */
+                    {
+                      k: "Manufactured at",
+                      v: (
+                        <>
+                          {BRAND.manufacturing.line1}
+                          <br />
+                          {BRAND.manufacturing.line2}, {BRAND.manufacturing.region}
+                        </>
+                      ),
+                    },
+                    /* No "Speak to" row. The channel cards above already carry
+                       the phone, WhatsApp and email, and /about now names all
+                       three of the leadership with their numbers — naming one
+                       person here as the way in duplicated both. */
                     {
                       k: "Hours",
                       v: "Monday to Saturday, working hours. Messages sent outside those hours are answered the next working day.",

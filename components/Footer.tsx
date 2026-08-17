@@ -85,12 +85,29 @@ export default function Footer() {
             <p className="mt-3 text-sm italic leading-relaxed text-cream/70">
               &ldquo;{BRAND.tagline}&rdquo;
             </p>
-            <address className="mt-3 text-sm not-italic leading-relaxed text-cream/60">
+            {/* Two addresses, so both are labelled. Unlabelled and stacked,
+                the second reads as more lines of the first — and these are in
+                different states, which is exactly the thing a reader would
+                then get wrong. */}
+            <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.16em] text-cream/40">
+              Registered office
+            </p>
+            <address className="mt-1 text-sm not-italic leading-relaxed text-cream/60">
               {BRAND.address.line1}
               <br />
               {BRAND.address.line2}
               ,&nbsp;
               {BRAND.address.region}
+            </address>
+            <p className="mt-3.5 text-[10px] font-bold uppercase tracking-[0.16em] text-cream/40">
+              Manufactured at
+            </p>
+            <address className="mt-1 text-sm not-italic leading-relaxed text-cream/60">
+              {BRAND.manufacturing.line1}
+              <br />
+              {BRAND.manufacturing.line2}
+              ,&nbsp;
+              {BRAND.manufacturing.region}
             </address>
           </div>
 

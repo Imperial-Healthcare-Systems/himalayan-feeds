@@ -124,6 +124,15 @@ function Seat({ leader }: { leader: Leader }) {
           {leader.role}
         </p>
       )}
+      {/* Qualifications sit on their own line, not appended to the role. The
+          role line is uppercase and letter-spaced for a two-word title;
+          post-nominals run longer and read badly in that treatment, and
+          joining them would make the job title a sentence. */}
+      {leader.credentials && (
+        <p className="mt-1.5 text-[12px] font-medium text-ink-soft/70">
+          {leader.credentials}
+        </p>
+      )}
       {leader.lede && (
         <p className="mt-3 font-serif text-[17px] leading-[1.5] tracking-[-0.005em] text-ink">
           {leader.lede}
@@ -136,23 +145,42 @@ function Seat({ leader }: { leader: Leader }) {
           ))}
         </div>
       )}
+      {/* Direct line. The href is stripped to digits because a dialler will
+          not reliably parse the spaces, while the visible text keeps them —
+          the number is read far more often than it is tapped. */}
+      {leader.phone && (
+        <a
+          href={`tel:${leader.phone.replace(/[^\d+]/g, "")}`}
+          className="mt-4 inline-flex items-center gap-2 text-[13.5px] font-semibold text-ink transition-colors hover:text-terracotta"
+        >
+          <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-terracotta" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+            <path
+              d="M4.5 5.5c0-.6.4-1 1-1h2.2c.5 0 .9.3 1 .8l.7 2.8c.1.4-.1.8-.4 1l-1.4.9a12 12 0 0 0 5.4 5.4l.9-1.4c.2-.3.6-.5 1-.4l2.8.7c.5.1.8.5.8 1v2.2c0 .6-.4 1-1 1A14.5 14.5 0 0 1 4.5 5.5Z"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="sr-only">Call {leader.name} on </span>
+          {leader.phone}
+        </a>
+      )}
     </div>
   );
 }
 
 /* ---------------- The people behind the bag ----------------
-   Opens /about. Three equal seats in LEADERSHIP order, left to right — the
-   reserved seat leads, then the two named directors.
+   Opens /about. Three equal seats in LEADERSHIP order, left to right: the CEO,
+   then the two directors.
 
-   This used to give LEADERSHIP[0] a full-width "Director's desk" block with
-   the rest in a slim row beneath. That inverts the moment the first entry is a
-   vacancy: the largest, most prominent block on the page becomes an empty
-   chair, and a real person with real copy is demoted below it. Equal cards
-   keep the requested order without making a held seat the hero.
+   Equal cards rather than a featured lead block. That started as a defence
+   against the first seat being a vacancy — a full-width hero built around an
+   empty chair — and the seat is filled now, so the original reason is spent.
+   It stays because the roster is three people on one row at lg, which is
+   already a clear hierarchy by position; promoting the first seat would cost
+   the row and buy emphasis it does not need.
 
-   Cards are top-aligned and will differ in height — the Director's entry runs
-   to three paragraphs where the others run to two. That is expected; do not
-   trim client copy to even the columns up. */
+   Cards are top-aligned and will differ in height — entries run to two or
+   three paragraphs, and only the CEO carries a number. That is expected; do
+   not trim client copy to even the columns up. */
 export default function Leadership() {
   return (
     <section

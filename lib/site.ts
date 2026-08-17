@@ -16,10 +16,35 @@ export const BRAND = {
   phoneHref: "tel:+919086000555",
   whatsapp: "919086000555",
   email: "info@himalayanfeeds.com",
+  /** The registered office. NOT where the feed is made — see `manufacturing`. */
   address: {
     line1: "63 KVA, Chinar Colony, Darmuna",
     line2: "Budgam 191111",
     region: "Jammu & Kashmir",
+  },
+  /* ⚠ THE MILL IS IN PUNJAB, AND MOST OF THIS SITE SAYS IT IS IN BUDGAM.
+     Roughly 400 km and a state line separate the two addresses, so the
+     "milled locally / short supply lines" story told elsewhere is currently
+     contradicted by this block. Every place that needs deciding:
+
+       lib/site.ts COMPANY.story[3] ..... "milled in Budgam, Jammu & Kashmir"
+       lib/site.ts LEADERSHIP ........... "every bag that leaves Budgam"
+       app/dealership/page.tsx:24 ....... stat "J&K — Milled locally"
+       app/dealership/page.tsx:37 ....... "refills travel a short distance"
+       app/about/page.tsx:144 ........... figure "Milled in — Budgam, J&K"
+       components/catalogue/RangeBlocks.tsx:21 ... same figure on the ranges
+
+     Left as they are on purpose: whether Budgam mills as well, whether
+     Ludhiana is a contract manufacturer, or whether the J&K-miller
+     positioning is simply wrong, is a question about the business, not the
+     code. Resolve it with the client before this site is promoted — a dealer
+     choosing on "short supply lines" is choosing on this. */
+  manufacturing: {
+    /* ⚠ Spelling is the client's. If the village is the "Sidhwan" near
+       Jagraon, this needs an h — it is the addressable part of the line. */
+    line1: "Village Sidwan Kalan, GT Road",
+    line2: "Jagraon, Ludhiana 142026",
+    region: "Punjab",
   },
 };
 
@@ -89,12 +114,24 @@ export const COMPANY = {
    Get both the role and the bio approved in writing, then delete this notice.
    Do not extend this pattern to a third person. */
 export type Leader = {
+  /** null holds a seat open. No entry does today — the first seat, which was
+      reserved, is now the CEO — but the Seat component still renders the
+      dashed "reserved" panel for it, so a future appointment can be announced
+      before it is filled. */
   name: string | null;
   /** null on a reserved seat whose title is not settled either. Inventing a
-      title to fill the line would assert an org structure nobody has confirmed
-      — and this seat sits above two directors, so the guess would be a claim
-      about seniority, not just a label. */
+      title to fill the line would assert an org structure nobody has
+      confirmed, which is a claim about seniority, not just a label. */
   role: string | null;
+  /** Post-nominals, shown as their own line under the role. Separate from
+      `role` on purpose: "CEO B Sc Agri MBA" as one string is not a job title,
+      and a screen reader would read it as one. */
+  credentials: string | null;
+  /** Direct line, rendered as a tel: link.
+      ⚠ A personal mobile, not a switchboard — publishing it puts it in front
+      of scrapers as well as farmers. Set it only where the person has agreed
+      to that, and drop it to null the day they would rather it came down. */
+  phone: string | null;
   /** One bold line above the body copy. Sets the tone before the detail. */
   lede: string | null;
   /** Paragraphs. Written in the leader's own voice. */
@@ -103,13 +140,37 @@ export type Leader = {
 };
 
 export const LEADERSHIP: Leader[] = [
-  /* Reserved, and first. `role` is null on purpose: this seat sits ahead of two
-     directors, so any title written here ("Chairman", "Managing Director")
-     would invent a rank as well as a job. Fill in name and role together. */
-  { name: null, role: null, lede: null, bio: null, photo: null },
+  /* The seat that was held open, now filled. Name, role, qualifications and
+     number are the client's; `lede` and `bio` are NOT — they are written copy
+     put in a real, named person's voice, and he has not seen them. Get them
+     approved before this page is promoted anywhere.
+
+     No portrait supplied, so the seat falls back to the monogram panel. That
+     is a designed state, not a broken one, but a photograph of the CEO is
+     worth chasing — this is the first face on the page. */
+  {
+    name: "Sanjeev Raina",
+    role: "CEO",
+    credentials: "B.Sc. Agriculture · MBA",
+    phone: "+91 99882 88678",
+    /* ⚠ Everything from here to `photo` is invented copy. */
+    lede: "Feed is the one input a farmer buys every week of the year. It should be the one he never has to think twice about.",
+    bio: [
+      "I trained in agriculture before I trained in business, and the order matters. You can model a market on a spreadsheet; you cannot model a cow. What she gives back depends on what she was given three weeks ago, and she keeps no accounts and accepts no excuses.",
+      "Kashmir's dairy farms are small, and that is their strength — the animals are known individually, watched daily, and kept by the family that depends on them. What those farms have gone without is a feed steady enough that nobody feels the need to test each sack before trusting it. Building that is the whole of the work.",
+      "We would rather grow slowly and be trusted than grow quickly and be questioned. If our name on a bag lets a farmer stop thinking about feed and get on with the rest of the farm, the job is done.",
+    ],
+    photo: null,
+  },
   {
     name: BRAND.contactPerson,
     role: "Director",
+    credentials: null,
+    /* The same number as BRAND.phone / BRAND.phoneHref, written in the
+       leadership format (+91, spaced) so the three cards agree rather than
+       showing one number as "90860-00555" beside another as "+91 …". Two
+       renderings of one number: change the digits here and in BRAND together. */
+    phone: "+91 90860 00555",
     lede: "Ready to serve the farming community of Jammu & Kashmir.",
     bio: [
       "Feed is bought on trust and judged on the next batch. That is the standard we hold ourselves to — every bag that leaves Budgam has to perform the way the last one did, because a farmer who changes feed mid-cycle pays for it twice.",
@@ -122,6 +183,8 @@ export const LEADERSHIP: Leader[] = [
     name: "Shayesta Hamid",
     /* ⚠ Placeholder title — see the notice above. */
     role: "Director",
+    credentials: null,
+    phone: null,
     /* ⚠ Everything from here to `photo` is invented copy. */
     lede: "Quality is decided long before the bag is stitched shut.",
     bio: [
