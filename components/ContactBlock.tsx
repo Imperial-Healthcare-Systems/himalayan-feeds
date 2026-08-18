@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { BRAND, CATEGORIES } from "@/lib/site";
-import { enquiryHref, GENERAL_TYPES, DEALERSHIP_TYPE } from "@/lib/enquiry";
+import { enquiryHref, submitEnquiry, GENERAL_TYPES, DEALERSHIP_TYPE, type EnquiryRow } from "@/lib/enquiry";
 import { Field, Select, Textarea } from "./FormFields";
 
 /* ---------------- General enquiry ----------------
@@ -31,18 +31,29 @@ export default function ContactBlock() {
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
       setF({ ...f, [k]: e.target.value });
 
-  const send = () => {
-    window.open(
-      enquiryHref("general", f.subject, [
-        ["Name", f.name],
-        ["Phone", f.phone],
-        ["Email", f.email],
-        ["City / District", f.city],
-        ["Range", f.interest],
-        ["Message", f.msg],
-      ]),
-      "_blank"
-    );
+  const [sending, setSending] = useState(false);
+
+  /* Same two-channel handling as the dealership form: mail it, and fall back
+     to the WhatsApp handoff only if that did not land. See lib/mail.ts. */
+  const send = async () => {
+    if (sending) return;
+    setSending(true);
+
+    const rows: EnquiryRow[] = [
+      ["Name", f.name],
+      ["Phone", f.phone],
+      ["Email", f.email],
+      ["City / District", f.city],
+      ["Range", f.interest],
+      ["Message", f.msg],
+    ];
+
+    const mailed = await submitEnquiry("general", f.subject, rows);
+    if (!mailed) {
+      window.open(enquiryHref("general", f.subject, rows), "_blank");
+    }
+
+    setSending(false);
     setSent(true);
   };
 
@@ -138,13 +149,13 @@ export default function ContactBlock() {
 
         <button
           onClick={send}
-          disabled={!valid}
+          disabled={!valid || sending}
           className="w-full rounded-full gradient-orange py-3.5 font-semibold text-white shadow-soft transition-all hover:shadow-lift disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Send enquiry
+          {sending ? "Sending…" : "Send enquiry"}
         </button>
         <p className="text-center text-[11.5px] text-ink-soft/70">
-          Opens WhatsApp with your details filled in — no account or sign-up needed.
+          Sent straight to our team. No account or sign-up needed.
         </p>
       </div>
     </div>

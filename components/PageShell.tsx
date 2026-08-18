@@ -3,6 +3,7 @@ import Header from "./Header";
 import AnnouncementBar from "./AnnouncementBar";
 import Footer from "./Footer";
 import WhatsAppFloat from "./WhatsAppFloat";
+import LeadPopup from "./LeadPopup";
 
 /* ---------------- Shared chrome for every inner page ---------------- */
 export default function PageShell({ children }: { children: ReactNode }) {
@@ -13,6 +14,10 @@ export default function PageShell({ children }: { children: ReactNode }) {
       <main>{children}</main>
       <Footer />
       <WhatsAppFloat />
+      {/* Opens itself ten seconds in, and holds its own rules about when not
+          to — including staying away from /contact and /dealership, where a
+          lead form is already on screen. */}
+      <LeadPopup />
     </>
   );
 }

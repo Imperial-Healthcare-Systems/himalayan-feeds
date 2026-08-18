@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { BRAND, CATEGORIES } from "@/lib/site";
-import { enquiryHref, DEALERSHIP_TYPE } from "@/lib/enquiry";
+import { enquiryHref, submitEnquiry, DEALERSHIP_TYPE, type EnquiryRow } from "@/lib/enquiry";
 import { Field, Select, Textarea, LockedField } from "./FormFields";
 
 const BUSINESS_TYPES = [
@@ -18,10 +18,10 @@ const BUSINESS_TYPES = [
    Card only — the page owns the surrounding layout.
 
    The enquiry type is fixed to "Dealership / distribution" and cannot be
-   changed. That is the point: with no backend, the WhatsApp message is the
-   only record, so this form must always be identifiable as a dealer lead.
-   Anyone who lands here by mistake is pointed at the contact page rather than
-   allowed to send a general question down the dealer pipeline. */
+   changed. That is the point: the enquiry text is the whole record on both
+   channels, so this form must always be identifiable as a dealer lead. Anyone
+   who lands here by mistake is pointed at the contact page rather than allowed
+   to send a general question down the dealer pipeline. */
 export default function DealershipForm() {
   const [f, setF] = useState({
     name: "",
@@ -39,19 +39,38 @@ export default function DealershipForm() {
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
       setF({ ...f, [k]: e.target.value });
 
-  const submit = () => {
-    window.open(
-      enquiryHref("dealership", DEALERSHIP_TYPE, [
-        ["Name", f.name],
-        ["Phone", f.phone],
-        ["Email", f.email],
-        ["City / District", f.city],
-        ["Business", f.business],
-        ["Feed of interest", f.interest],
-        ["Note", f.note],
-      ]),
-      "_blank"
-    );
+  const [sending, setSending] = useState(false);
+
+  /* Email first, WhatsApp only if that fails.
+     The mailer is unconfigured until a provider key is set (see lib/mail.ts),
+     and it can fail afterwards too, so the handoff this form has always used
+     stays as the fallback. The visitor sees the same success screen either
+     way; what they must never see is a thank-you for a lead that reached
+     nobody. */
+  const submit = async () => {
+    if (sending) return;
+    setSending(true);
+
+    const rows: EnquiryRow[] = [
+      ["Name", f.name],
+      ["Phone", f.phone],
+      ["Email", f.email],
+      ["City / District", f.city],
+      ["Business", f.business],
+      ["Feed of interest", f.interest],
+      ["Note", f.note],
+    ];
+
+    const mailed = await submitEnquiry("dealership", DEALERSHIP_TYPE, rows);
+    if (!mailed) {
+      /* Opened from inside the click's own task in the failure case only.
+         A popup blocker will stop window.open once an await has run, so this
+         can be refused — hence the WhatsApp link repeated on the success
+         screen, which is a plain user-initiated click and always works. */
+      window.open(enquiryHref("dealership", DEALERSHIP_TYPE, rows), "_blank");
+    }
+
+    setSending(false);
     setSent(true);
   };
 
@@ -146,13 +165,13 @@ export default function DealershipForm() {
 
         <button
           onClick={submit}
-          disabled={!valid}
+          disabled={!valid || sending}
           className="w-full rounded-full gradient-orange py-3.5 font-semibold text-white shadow-soft transition-all hover:shadow-lift disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Send dealership enquiry
+          {sending ? "Sending…" : "Send dealership enquiry"}
         </button>
         <p className="text-center text-[11.5px] text-ink-soft/70">
-          Opens WhatsApp with your details filled in — no account or sign-up needed.
+          Sent straight to our team. No account or sign-up needed.
         </p>
       </div>
     </div>
