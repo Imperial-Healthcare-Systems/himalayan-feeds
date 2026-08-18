@@ -19,7 +19,16 @@ function initials(name: string) {
 
    Portraits are pre-cropped to 4:5 in public/images/team, so object-cover has
    nothing to trim; the aspect box around this component must stay 4/5 or the
-   crop starts cutting into the head. */
+   crop starts cutting into the head.
+
+   Filenames carry an 8-char content hash because these are served straight
+   from public/ with a 24h max-age. Replacing a portrait at its existing URL
+   leaves every returning visitor on the stale one for a day — which is exactly
+   what happened when two of these were first swapped in place. New photo means
+   a new filename:
+     node -e "console.log(require('crypto').createHash('sha256').update(require('fs').readFileSync(F)).digest('hex').slice(0,8))"
+   then update the `photo` path in lib/site.ts LEADERSHIP and delete the old
+   file. */
 function Portrait({
   leader,
   rounded = "rounded-3xl",

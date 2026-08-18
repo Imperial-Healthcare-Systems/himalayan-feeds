@@ -145,9 +145,10 @@ export const LEADERSHIP: Leader[] = [
      put in a real, named person's voice, and he has not seen them. Get them
      approved before this page is promoted anywhere.
 
-     No portrait supplied, so the seat falls back to the monogram panel. That
-     is a designed state, not a broken one, but a photograph of the CEO is
-     worth chasing — this is the first face on the page. */
+     Portrait supplied by the client as raina_sir.png (1086x1448, 3:4). Cropped
+     to the 4:5 the portrait boxes expect — the 91px came off the bottom, not
+     the centre, so the headroom is untouched — then sized to the 630x788 WebP
+     the other two seats use. The source PNG is still in the folder. */
   {
     name: "Sanjeev Raina",
     role: "CEO",
@@ -160,7 +161,7 @@ export const LEADERSHIP: Leader[] = [
       "Kashmir's dairy farms are small, and that is their strength — the animals are known individually, watched daily, and kept by the family that depends on them. What those farms have gone without is a feed steady enough that nobody feels the need to test each sack before trusting it. Building that is the whole of the work.",
       "We would rather grow slowly and be trusted than grow quickly and be questioned. If our name on a bag lets a farmer stop thinking about feed and get on with the rest of the farm, the job is done.",
     ],
-    photo: null,
+    photo: "/images/team/sanjeev-raina.482d3562.webp",
   },
   {
     name: BRAND.contactPerson,
@@ -177,7 +178,7 @@ export const LEADERSHIP: Leader[] = [
       "Working directly with farmers, dairy owners and our dealer network across Jammu & Kashmir means we hear quickly when something is not right, and we would far rather hear it than not. That feedback is worth more to us than any amount of marketing.",
       "Better nutrition makes healthier animals. Healthier animals make more productive farms. And more productive farms build the stronger farming community we set out to serve.",
     ],
-    photo: "/images/team/showkat-wani.webp",
+    photo: "/images/team/showkat-wani.cc160c75.webp",
   },
   {
     name: "Shayesta Hamid",
@@ -191,7 +192,7 @@ export const LEADERSHIP: Leader[] = [
       "By the time feed reaches a farm it is far too late to fix it. What protects the farmer is the boring, repetitive part of this business — checking what arrives at the gate, holding a recipe to the gram, and refusing a batch that is nearly right.",
       "That standard only means something if it survives a busy week. So it is written down, it is followed when nobody is watching, and it does not bend because an order is waiting.",
     ],
-    photo: "/images/team/shayesta-hamid.webp",
+    photo: "/images/team/shayesta-hamid.7c3a9ed6.webp",
   },
 ];
 
