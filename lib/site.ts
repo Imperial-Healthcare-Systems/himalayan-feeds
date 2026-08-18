@@ -132,6 +132,14 @@ export type Leader = {
       of scrapers as well as farmers. Set it only where the person has agreed
       to that, and drop it to null the day they would rather it came down. */
   phone: string | null;
+  /** Direct address, rendered as a mailto: link beside the phone.
+      Two of the three are ROLE addresses (purchase@, admin@) rather than
+      personal ones, which is the safer thing to publish: a role address
+      survives the person leaving, can be redirected without anyone changing
+      their own inbox, and does not put an individual's mail in front of
+      scrapers the way a personal one does. Prefer that pattern for any seat
+      added later. */
+  email: string | null;
   /** One bold line above the body copy. Sets the tone before the detail. */
   lede: string | null;
   /** Paragraphs. Written in the leader's own voice. */
@@ -154,6 +162,7 @@ export const LEADERSHIP: Leader[] = [
     role: "CEO",
     credentials: "B.Sc. Agriculture · MBA",
     phone: "+91 99882 88678",
+    email: "raina@himalayanfeeds.com",
     /* ⚠ Everything from here to `photo` is invented copy. */
     lede: "Feed is the one input a farmer buys every week of the year. It should be the one he never has to think twice about.",
     bio: [
@@ -172,6 +181,12 @@ export const LEADERSHIP: Leader[] = [
        showing one number as "90860-00555" beside another as "+91 …". Two
        renderings of one number: change the digits here and in BRAND together. */
     phone: "+91 90860 00555",
+    /* ⚠ Supplied as "purchase@himalayanfeed.com" — no trailing s. Corrected to
+       himalayanfeeds.com, which is the domain every other address on this site
+       uses (BRAND.email, SITE_URL, robots, sitemap). If himalayanfeed.com is
+       genuinely a second domain the company owns, change it back; as typed it
+       would have bounced. */
+    email: "purchase@himalayanfeeds.com",
     lede: "Ready to serve the farming community of Jammu & Kashmir.",
     bio: [
       "Feed is bought on trust and judged on the next batch. That is the standard we hold ourselves to — every bag that leaves Budgam has to perform the way the last one did, because a farmer who changes feed mid-cycle pays for it twice.",
@@ -186,6 +201,13 @@ export const LEADERSHIP: Leader[] = [
     role: "Director",
     credentials: null,
     phone: null,
+    /* ⚠ Same address as lib/admin/auth.ts DEMO_EMAIL, so the admin portal's
+       demo username is now printed on a public marketing page. The password
+       beside it is already compiled into the client bundle and that file says
+       so itself, so this leaks nothing that was secret — but it removes the
+       last scrap of obscurity, and is one more reason the demo auth needs
+       replacing before launch. */
+    email: "admin@himalayanfeeds.com",
     /* ⚠ Everything from here to `photo` is invented copy. */
     lede: "Quality is decided long before the bag is stitched shut.",
     bio: [

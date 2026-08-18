@@ -154,23 +154,50 @@ function Seat({ leader }: { leader: Leader }) {
           ))}
         </div>
       )}
-      {/* Direct line. The href is stripped to digits because a dialler will
-          not reliably parse the spaces, while the visible text keeps them —
-          the number is read far more often than it is tapped. */}
-      {leader.phone && (
-        <a
-          href={`tel:${leader.phone.replace(/[^\d+]/g, "")}`}
-          className="mt-4 inline-flex items-center gap-2 text-[13.5px] font-semibold text-ink transition-colors hover:text-terracotta"
-        >
-          <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-terracotta" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-            <path
-              d="M4.5 5.5c0-.6.4-1 1-1h2.2c.5 0 .9.3 1 .8l.7 2.8c.1.4-.1.8-.4 1l-1.4.9a12 12 0 0 0 5.4 5.4l.9-1.4c.2-.3.6-.5 1-.4l2.8.7c.5.1.8.5.8 1v2.2c0 .6-.4 1-1 1A14.5 14.5 0 0 1 4.5 5.5Z"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="sr-only">Call {leader.name} on </span>
-          {leader.phone}
-        </a>
+      {/* Direct contact. Both links sit in one wrapping row rather than as two
+          stacked blocks, so a seat carrying a number and an address does not
+          run noticeably taller than one carrying only an address. They wrap
+          instead of shrinking: an email truncated to fit is no longer an
+          address anyone can read or retype.
+
+          The tel: href is stripped to digits because a dialler will not
+          reliably parse the spaces, while the visible text keeps them — the
+          number is read far more often than it is tapped. mailto: needs no
+          such treatment; the address is already the machine-readable form. */}
+      {(leader.phone || leader.email) && (
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+          {leader.phone && (
+            <a
+              href={`tel:${leader.phone.replace(/[^\d+]/g, "")}`}
+              className="inline-flex items-center gap-2 text-[13.5px] font-semibold text-ink transition-colors hover:text-terracotta"
+            >
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-terracotta" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                <path
+                  d="M4.5 5.5c0-.6.4-1 1-1h2.2c.5 0 .9.3 1 .8l.7 2.8c.1.4-.1.8-.4 1l-1.4.9a12 12 0 0 0 5.4 5.4l.9-1.4c.2-.3.6-.5 1-.4l2.8.7c.5.1.8.5.8 1v2.2c0 .6-.4 1-1 1A14.5 14.5 0 0 1 4.5 5.5Z"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="sr-only">Call {leader.name} on </span>
+              {leader.phone}
+            </a>
+          )}
+
+          {leader.email && (
+            <a
+              href={`mailto:${leader.email}`}
+              className="inline-flex items-center gap-2 text-[13.5px] font-semibold text-ink transition-colors hover:text-terracotta"
+            >
+              {/* The same envelope the contact cards and the footer use, so
+                  the three places an address appears carry one mark. */}
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 text-terracotta" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                <rect x="2.75" y="5" width="18.5" height="14" rx="2.5" />
+                <path d="M3.6 7.6l8.4 5.6 8.4-5.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="sr-only">Email {leader.name} at </span>
+              {leader.email}
+            </a>
+          )}
+        </div>
       )}
     </div>
   );
