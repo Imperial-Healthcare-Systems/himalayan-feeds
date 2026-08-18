@@ -237,11 +237,18 @@ export const CERTIFICATIONS: Certification[] = [
 ];
 
 /* ---------------- Social profiles ----------------
-   PLACEHOLDER handles — no account has been verified at any of these URLs.
-   Swap in the real ones (or delete the entry) before going live. */
+   Facebook and Instagram are the client's real accounts, supplied directly.
+   The Facebook page has no vanity URL yet, so it is linked by numeric profile
+   id and `handle` carries the page name instead of an @ — the footer shows
+   `handle` as the link title, and "@himalayanfeeds" there would be a handle
+   that does not resolve.
+
+   ⚠ X, LinkedIn and YouTube are still PLACEHOLDER URLs — no account has been
+   verified at any of the three, so each is a live link to somebody else's
+   page or a 404. Supply the real ones or delete the entries before launch. */
 export const SOCIALS = [
-  { label: "Facebook", handle: "@himalayanfeeds", href: "https://facebook.com/himalayanfeeds" },
-  { label: "Instagram", handle: "@himalayanfeeds", href: "https://instagram.com/himalayanfeeds" },
+  { label: "Facebook", handle: "Himalayan Feeds", href: "https://www.facebook.com/profile.php?id=61572044818368" },
+  { label: "Instagram", handle: "@himalayan_feeds", href: "https://www.instagram.com/himalayan_feeds/" },
   { label: "X", handle: "@himalayanfeeds", href: "https://x.com/himalayanfeeds" },
   { label: "LinkedIn", handle: "himalayan-feeds", href: "https://linkedin.com/company/himalayan-feeds" },
   { label: "YouTube", handle: "@himalayanfeeds", href: "https://youtube.com/@himalayanfeeds" },

@@ -176,7 +176,8 @@ export default function ContactPage() {
                 </dl>
               </Reveal>
 
-              {/* Socials — placeholder handles, flagged in lib/site.ts */}
+              {/* Socials — Facebook and Instagram are real; the other three
+                  are still placeholders, flagged in lib/site.ts */}
               <Reveal delay={0.3}>
                 <div className="mt-8">
                   <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-ink-soft/55">
