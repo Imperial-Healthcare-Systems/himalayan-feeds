@@ -467,7 +467,9 @@ export type Product = {
   stage: string;
   /** One line, shown under the name. */
   summary: string;
-  /** Two or three sentences of range copy. */
+  /** One short line under the summary — a line and a half at most on the
+      catalogue row. Long enough to say what the product is and who it is for,
+      short enough that a farmer scanning the range reads all of them. */
   description: string;
   /** Three short benefit phrases, rendered as pills. */
   highlights: string[];
@@ -612,7 +614,7 @@ export const CATEGORIES: Category[] = [
         stage: "Calf",
         summary: "Where it starts — the feed that shapes the animal she becomes.",
         description:
-          "A calf's frame, her rumen and her immunity are all built in the first few months, and a heifer that grows well in that window reaches service weight sooner and milks better for it. Formulated to be easy to digest and palatable enough that intake starts early and holds steady right through weaning.",
+          "Easy to digest and palatable, so calves start eating early and hold intake steady right through weaning.",
         highlights: ["Improves health & growth", "Better digestion", "Strong immunity"],
         suitableFor: ["Calves", "Replacement heifers", "Cow & buffalo herds"],
         form: null,
@@ -627,7 +629,7 @@ export const CATEGORIES: Category[] = [
         stage: "Growing calf",
         summary: "After the starter — the months that turn a calf into a heifer.",
         description:
-          "Once the rumen is working properly the job changes from getting her eating to building the animal. Formulated for steady frame and bone development through the growing months, so she reaches the heifer stage the right size for her age instead of trying to catch up on it later.",
+          "Feeds steady frame and bone development through the growing months, so she reaches heifer stage the right size for her age.",
         highlights: ["Improves health & growth", "High quality ingredients", "Strong immunity"],
         suitableFor: ["Growing calves", "Replacement heifers", "Cow & buffalo herds"],
         form: null,
@@ -642,7 +644,7 @@ export const CATEGORIES: Category[] = [
         stage: "Heifer",
         summary: "The last stretch before she calves — and the one most often cut.",
         description:
-          "A maiden heifer produces nothing this month, which is exactly why her ration is the first one trimmed. She is building the animal that has to milk for the next several years. Formulated to hold condition and support frame and fertility, so she gets in calf on time and calves down fit rather than fat.",
+          "Holds condition and supports frame and fertility, so she gets in calf on time and calves down fit rather than fat.",
         highlights: ["Improves health & growth", "High quality ingredients", "Better digestion"],
         suitableFor: ["Maiden heifers", "Replacement stock", "Cow & buffalo herds"],
         form: null,
@@ -665,7 +667,7 @@ export const CATEGORIES: Category[] = [
         stage: "Transition",
         summary: "Around calving — the few weeks that decide the whole lactation.",
         description:
-          "Appetite falls away in the days either side of calving, exactly when her demand is climbing fastest, and ground lost in that window is rarely made back later. Built to keep intake up through the changeover, so she walks into milk in condition instead of drawing on her own reserves to produce it.",
+          "Keeps intake up through the weeks either side of calving, so she walks into milk in condition rather than on her own reserves.",
         highlights: ["Better digestion", "Strong immunity, better milk yield", "Improves health & growth"],
         suitableFor: ["Dry & freshly calved cows", "Buffalo at calving", "Dairy herds"],
         form: "Mix",
@@ -685,7 +687,7 @@ export const CATEGORIES: Category[] = [
         stage: "In milk",
         summary: "The everyday milking ration — where the ladder starts.",
         description:
-          "The working feed for a herd in steady production, fed against the milk actually in the churn: the bag sets the rate at 400 g per litre for a cow and 500 g for a buffalo. It is the grade most herds sit on for most of the lactation, and the base the rest of the range is measured from.",
+          "The everyday milking ration, fed at 400 g per litre for a cow and 500 g for a buffalo — the base the rest of the range is measured from.",
         highlights: ["High quality ingredients", "Better digestion", "More milk, more profit"],
         suitableFor: ["Dairy cows in milk", "Buffalo in milk", "Mixed herds"],
         form: null,
@@ -700,7 +702,7 @@ export const CATEGORIES: Category[] = [
         stage: "In milk",
         summary: "The Gold grade, at the same feeding rate.",
         description:
-          "Fed on the same measure as 8000 — 400 g per litre for a cow, 500 g for a buffalo — for the same stage of the lactation. What separates the two is the formulation rather than the feeding, so ask us which suits your herd before you switch between them.",
+          "The Gold grade at the same rate as 8000 — 400 g per litre for a cow, 500 g for a buffalo. What differs is the formulation, not the feeding.",
         highlights: ["High quality ingredients", "More milk, more profit", "Better digestion"],
         suitableFor: ["Dairy cows in milk", "Buffalo in milk", "Mixed herds"],
         form: null,
@@ -715,7 +717,7 @@ export const CATEGORIES: Category[] = [
         stage: "Higher yield",
         summary: "One step up — for the animals pulling ahead of the herd.",
         description:
-          "Most herds have a group doing noticeably more than the rest, and feeding them the same grade as everyone else quietly costs you the difference. The step up for cows and buffalo whose output has moved beyond what the base grade is built to carry.",
+          "The step up for cows and buffalo producing beyond what the base grade is built to carry.",
         highlights: ["Strong immunity, better milk yield", "More milk, more profit", "High quality ingredients"],
         suitableFor: ["Higher-yielding cows", "Higher-yielding buffalo"],
         form: null,
@@ -730,7 +732,7 @@ export const CATEGORIES: Category[] = [
         stage: "Peak yield",
         summary: "The top of the ladder — the densest ration in the range.",
         description:
-          "A high-producing animal physically cannot eat enough volume to cover her own output, so the answer is a denser feed rather than a bigger scoop. The grade for herds pushing for maximum milk, where yield has to hold right through the flush without the animal paying for it in condition or health.",
+          "The densest ration in the range, for high-yielding animals that cannot eat enough volume to cover their own output.",
         highlights: ["More milk, more profit", "Maximum nutrition", "Strong immunity, better milk yield"],
         suitableFor: ["High-yield cows", "High-yield buffalo", "Crossbreds at flush"],
         form: null,
@@ -745,7 +747,7 @@ export const CATEGORIES: Category[] = [
         stage: "Herd-wide",
         summary: "Across the herd — the same nutrition, in whichever form your shed prefers.",
         description:
-          "Pellets travel and store cleanly, stop the animal sorting the mix at the manger and cut what ends up underfoot. Mash blends readily into a home ration where green fodder and silage are already part of the routine. Which one suits you is a handling decision more than a nutritional one.",
+          "The same nutrition in two forms: pellets stop sorting at the manger, mash blends into a home ration. A handling choice, not a nutritional one.",
         highlights: ["Two handling formats", "Cuts sorting at the manger", "Reduces wastage"],
         suitableFor: ["Manger-fed sheds", "Home-mixed rations"],
         form: "Pellet or mash",
@@ -762,7 +764,7 @@ export const CATEGORIES: Category[] = [
         stage: "Add-on",
         summary: "Alongside the ration — the minerals a home mix usually misses.",
         description:
-          "Farms mixing their own fodder and concentrate normally have the energy about right and the minerals short, and it shows up in fertility long before it shows up in the milk. This range fills that gap alongside whatever you already feed, rather than replacing any part of it.",
+          "Fills the mineral gap a home-mixed ration usually leaves, fed alongside whatever you already feed rather than replacing any of it.",
         highlights: ["Fills mineral gaps", "Supports fertility", "Used with the main ration"],
         suitableFor: ["Home-mixed rations", "Grazing herds"],
         form: null,
@@ -779,7 +781,7 @@ export const CATEGORIES: Category[] = [
         stage: "Base grade",
         summary: "The base grade — the working ration for a milking flock.",
         description:
-          "An energy-rich mash for sheep and goats in steady production, fed alongside grazing and whatever fodder the season provides. It is the grade most flocks sit on, and the one the two above it step up from.",
+          "An energy-rich mash for sheep and goats in steady production, fed alongside grazing and whatever fodder the season provides.",
         highlights: ["High energy", "High milk production", "Better digestion"],
         suitableFor: ["Milking ewes & does", "Mixed sheep & goat flocks"],
         form: "Mash",
@@ -794,7 +796,7 @@ export const CATEGORIES: Category[] = [
         stage: "Higher grade",
         summary: "One step up — for the animals doing more than the flock average.",
         description:
-          "Grazing and the base grade together will carry an average animal, but not the ones pulling ahead of it. The middle grade of the range, for ewes and does whose output has moved past what the everyday mash is built to cover.",
+          "The middle grade, for ewes and does producing past what grazing and the base mash together will cover.",
         highlights: ["High energy", "High milk production", "Improves health"],
         suitableFor: ["Higher-yielding ewes & does", "Dairy goat units"],
         form: "Mash",
@@ -809,7 +811,7 @@ export const CATEGORIES: Category[] = [
         stage: "Top grade",
         summary: "The top grade — the densest mash in the range.",
         description:
-          "A high-producing ewe or doe runs out of appetite long before she runs out of demand, so the ration has to carry more in the same volume. The grade for flocks pushing for maximum milk, where yield has to hold without the animal drawing on her own condition to keep it there.",
+          "The densest mash in the range, for high-yielding ewes and does whose demand outruns their appetite.",
         highlights: ["High energy", "High milk production", "Improves health"],
         suitableFor: ["High-yield ewes & does", "Commercial dairy goat units"],
         form: "Mash",
@@ -849,7 +851,7 @@ export const CATEGORIES: Category[] = [
         stage: "Chick",
         summary: "Day one — the first feed a chick ever eats.",
         description:
-          "The opening feed for every bird on the farm, broiler and layer alike. Fine-textured and highly palatable so chicks are eating within hours of placement — which is what decides whether a flock leaves week one even, or already split into birds that are away and birds that never catch up.",
+          "The first feed for broiler and layer chicks alike — fine-textured and palatable, so they are eating within hours of placement.",
         highlights: ["Strong start", "Supports immunity", "Better feed conversion"],
         suitableFor: ["Broiler & layer chicks", "Backyard & desi flocks"],
         form: null,
@@ -863,7 +865,7 @@ export const CATEGORIES: Category[] = [
         stage: "Starter",
         summary: "Once the flock is feeding — the phase that sets the growth curve.",
         description:
-          "With intake established, this is where frame, feather and immunity are laid down together, and where the curve underneath the rest of the cycle gets set. Formulated to keep growth strong and the flock even, so the birds reach the grower phase as one batch rather than three.",
+          "Lays down frame, feather and immunity together, keeping the flock even so it reaches the grower phase as one batch.",
         highlights: ["Strong growth", "Feather development", "Improves feed efficiency"],
         suitableFor: ["Commercial broiler units", "Contract farming"],
         form: null,
@@ -877,7 +879,7 @@ export const CATEGORIES: Category[] = [
         stage: "Finisher",
         summary: "The closing phase — where the feed bill is largest and conversion pays hardest.",
         description:
-          "A broiler eats more in its final stretch than in any phase before it, so a fraction of a point on feed conversion is worth more here than anywhere else in the cycle. Built to carry flocks to weight evenly and hold meat quality right through to lifting.",
+          "Carries broilers to weight evenly and holds meat quality through to lifting, in the phase where feed conversion pays hardest.",
         highlights: ["Maximum weight gain", "Better FCR", "Improves meat quality"],
         suitableFor: ["Commercial broiler units"],
         form: null,
@@ -891,7 +893,7 @@ export const CATEGORIES: Category[] = [
         stage: "Early lay",
         summary: "Coming into lay — building the hen before she has to perform.",
         description:
-          "A pullet has to reach frame and bodyweight before first egg, because whatever she has not built by then she never will. Formulated for the run-up to lay and the opening weeks of production, when body development and early egg output are being asked for at the same time.",
+          "For the run-up to lay and the opening weeks of production, when body development and early egg output are asked for at once.",
         highlights: ["Promotes early maturity", "Better body development", "Strong bones"],
         suitableFor: ["Pullets", "Commercial layer units"],
         form: null,
@@ -905,7 +907,7 @@ export const CATEGORIES: Category[] = [
         stage: "Peak lay",
         summary: "Deep into lay — holding rate, egg weight and shell strength together.",
         description:
-          "A hen short of calcium draws it out of her own skeleton, and it shows up in the shell long before it shows up in the count. Formulated for the later laying phase, where the job is to keep production, egg weight and shell strength holding together rather than trading one off against another.",
+          "For the later laying phase — keeps rate, egg weight and shell strength holding together instead of trading one off against another.",
         highlights: ["High egg production", "Better shell strength", "Improves egg weight"],
         suitableFor: ["Commercial layer units"],
         form: null,
@@ -919,7 +921,7 @@ export const CATEGORIES: Category[] = [
         stage: "Add-on",
         summary: "Alongside the ration — support for the moments that strain a flock.",
         description:
-          "Placement, transfer, a heat wave and the tail end of a long lay all pull on a flock in ways the daily ration alone is not meant to cover. Used alongside the main feed, never in place of it.",
+          "Support for placement, transfer, heat and the tail end of a long lay. Used alongside the main feed, never in place of it.",
         highlights: ["Supports stress periods", "Heat & transfer support", "Used with the main feed"],
         suitableFor: ["Flocks under strain", "Placement & transfer"],
         form: null,

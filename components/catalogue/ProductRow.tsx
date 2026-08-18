@@ -64,7 +64,12 @@ export default function ProductRow({
       className="group relative scroll-mt-32 border-t border-ink/[0.07] pb-12 pt-10 first:border-t-0 first:pt-0 last:pb-0 animate-rise"
       style={{ animationDelay: `${index * 90}ms` }}
     >
-      <div className="grid gap-x-7 gap-y-6 sm:grid-cols-[168px_1fr] lg:grid-cols-[3.25rem_188px_1fr]">
+      {/* Pack-shot column widths are deliberate, not arbitrary: at lg the list
+          column is 936px (max-w-7xl less the 248px category sidebar and its
+          48px gap), so 3.25rem + 240px + two 28px gaps leaves the detail
+          column 588px. Going much past 240 starts squeezing the three-cell
+          spec strip below it into wrapping. */}
+      <div className="grid gap-x-7 gap-y-6 sm:grid-cols-[210px_1fr] lg:grid-cols-[3.25rem_240px_1fr]">
         {/* Sequence rail — number plus a connector down to the next step */}
         <div className="relative hidden lg:block">
           <span
@@ -122,7 +127,7 @@ export default function ProductRow({
             height={1200}
             loading="lazy"
             decoding="async"
-            className="relative h-full w-full object-contain p-3 drop-shadow-[0_12px_20px_rgba(42,39,36,0.16)] transition-transform duration-700 ease-out group-hover:-translate-y-2 group-hover:scale-[1.03]"
+            className="relative h-full w-full object-contain p-2.5 drop-shadow-[0_12px_20px_rgba(42,39,36,0.16)] transition-transform duration-700 ease-out group-hover:-translate-y-2 group-hover:scale-[1.03]"
           />
         </div>
 
