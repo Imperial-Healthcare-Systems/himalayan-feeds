@@ -6,8 +6,17 @@ export const BRAND = {
   full: "Himalayan Feeds",
   legal: "Himalayan Feeds Pvt. Ltd.",
   tagline: "Nutrition for Better Growth & Better Yield",
-  /** The lockup that sits under the wordmark. */
-  positioning: "Cattle Feed | Poultry Feed | Animal Nutrition",
+  /** The lockup that sits under the wordmark.
+      ⚠ Shown in FOUR places, not just the header: the footer, the BrandLockup
+      on /about and the homepage, and the sign-off on /dealership. Re-wording
+      it moves all of them, which is the point — it is one brand line — but it
+      is worth knowing before changing it for the sake of one of them. */
+  positioning: "Animal Feeds | Animal Nutrition",
+  /** The promise under the positioning line in the header lockup. Sentence
+      case on purpose: it is a sentence, and setting it in the same uppercase
+      tracked style as the descriptor above would bury it in that texture
+      instead of letting it carry. */
+  assurance: "No compromise in quality",
   /** Dotted descriptor used in the header strip and metadata. */
   descriptor: "Animal Nutrition • Cattle Feed • Poultry Feed",
   contactPerson: "Md. Showkat Ahmad Wani",

@@ -23,15 +23,19 @@ const DIR_THRESHOLD = 6;
 /* ---------------- Brand lockup, second line ----------------
    BRAND.positioning is one string and reads as one line wherever it fits. A
    phone is not one of those places: at 390px the lockup has about 200px to
-   play with and the full line wants about 240px. Left alone the browser breaks
-   it at whichever space it reaches first, which strands a "|" at the end of
-   the line.
+   play with, and "Animal Feeds | Animal Nutrition" at the size it is now set
+   wants about 210. Left alone the browser breaks it at whichever space it
+   reaches first, which strands a "|" at the end of the line.
 
    So it is split at the last separator and the break is placed deliberately —
    two whole phrases rather than a phrase and a half. Above sm the separator
-   comes back and the <br> is display:none, so it is one line again, exactly as
-   before. Derived from the string rather than hardcoded, so re-wording
-   positioning in lib/site.ts still works. */
+   comes back and the <br> is display:none, so it is one line again. Derived
+   from the string rather than hardcoded, so re-wording positioning in
+   lib/site.ts still works, however many separators it ends up with.
+
+   The break is what buys the size increase: two short lines can be set larger
+   than one long one in the same width, and legibility at this scale matters
+   more than keeping it to a single row. */
 const POS_PARTS = BRAND.positioning
   .split("|")
   .map((s) => s.trim())
@@ -312,7 +316,10 @@ export default function Header() {
             <span className="block font-display font-800 text-[11.5px] tracking-[0.06em] text-ink sm:text-[12px] xl:text-[13px] xl:tracking-[0.08em]">
               {BRAND.full.toUpperCase()}
             </span>
-            <span className="mt-0.5 block text-[8px] font-bold uppercase leading-[1.35] tracking-[0.1em] text-ink-soft/55 sm:text-[9px] xl:text-[9.5px] xl:tracking-[0.13em]">
+            {/* Tracking eases off as the size goes up: 0.1em was carrying an
+                8px line that needed the help, and the same value at 11px reads
+                as gappy rather than considered. */}
+            <span className="mt-0.5 block text-[10px] font-bold uppercase leading-[1.35] tracking-[0.08em] text-ink-soft/65 sm:text-[10.5px] xl:text-[11px] xl:tracking-[0.1em]">
               {POS_HEAD}
               {POS_TAIL && (
                 <>
@@ -321,6 +328,22 @@ export default function Header() {
                   {POS_TAIL}
                 </>
               )}
+            </span>
+            {/* The promise line. Deliberately NOT the uppercase tracked
+                treatment of the two lines above — a third row in the same
+                texture would read as more of the same and be skipped.
+
+                Serif italic, not the display face italicised: Poppins is
+                loaded in app/layout.tsx by weight only, with no italic style,
+                so `italic` on it would get a browser-synthesised oblique —
+                a sheared upright, which shows badly at 11px. Fraunces ships a
+                true italic and is already loaded with it for the brand
+                tagline, which is the same editorial register this line is in.
+                Set a touch larger than the descriptor because a serif at this
+                size needs it, and in terracotta so it is the line the eye
+                lands on. */}
+            <span className="mt-1 block font-serif font-semibold italic leading-tight text-terracotta text-[10.5px] sm:text-[11px] xl:text-[12px]">
+              {BRAND.assurance}
             </span>
           </span>
         </Link>
