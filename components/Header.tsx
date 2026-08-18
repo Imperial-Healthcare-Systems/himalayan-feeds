@@ -6,6 +6,39 @@ import { usePathname } from "next/navigation";
 import { NAV, BRAND, CATEGORIES } from "@/lib/site";
 import Logo from "./Logo";
 
+/* ---------------- Hide-on-scroll tuning ----------------
+   How far down the page the header will consent to hide at all. Roughly its
+   own height: near the top, a flick of the wheel should never take the nav
+   with it, and there is nothing gained by hiding chrome that is about to be
+   scrolled past anyway. */
+const HIDE_AFTER = 120;
+
+/* How much movement is needed before a direction is believed. Trackpads,
+   momentum scrolling and touch all emit a stream of 1-2px deltas that change
+   sign constantly; without a dead zone the header flickers on every one of
+   them. Unspent movement accumulates rather than being dropped, so a slow
+   deliberate scroll still triggers — it just takes 6px to say so. */
+const DIR_THRESHOLD = 6;
+
+/* ---------------- Brand lockup, second line ----------------
+   BRAND.positioning is one string and reads as one line wherever it fits. A
+   phone is not one of those places: at 390px the lockup has about 200px to
+   play with and the full line wants about 240px. Left alone the browser breaks
+   it at whichever space it reaches first, which strands a "|" at the end of
+   the line.
+
+   So it is split at the last separator and the break is placed deliberately —
+   two whole phrases rather than a phrase and a half. Above sm the separator
+   comes back and the <br> is display:none, so it is one line again, exactly as
+   before. Derived from the string rather than hardcoded, so re-wording
+   positioning in lib/site.ts still works. */
+const POS_PARTS = BRAND.positioning
+  .split("|")
+  .map((s) => s.trim())
+  .filter(Boolean);
+const POS_HEAD = POS_PARTS.length > 1 ? POS_PARTS.slice(0, -1).join(" | ") : BRAND.positioning;
+const POS_TAIL = POS_PARTS.length > 1 ? POS_PARTS[POS_PARTS.length - 1] : "";
+
 /* Dot colour per range. Written out in full — Tailwind v4 only generates
    classes it can literally see, so `bg-${accent}` would not exist. */
 const DOT: Record<string, string> = {
@@ -117,17 +150,43 @@ function ProductsPanel({
 export default function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [openMobile, setOpenMobile] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   const navRef = useRef<HTMLElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /* The position the current direction was last judged from — not simply the
+     previous frame's scrollY, which is why DIR_THRESHOLD accumulates. */
+  const lastY = useRef(0);
 
-  /* rAF-throttled so the scroll handler never runs more than once a frame. */
+  /* Scroll position drives two separate things: whether the header is in its
+     compact "firmed up" state, and whether it is on screen at all — scrolling
+     down hides it, scrolling back up brings it straight back.
+
+     rAF-throttled so the handler never runs more than once a frame. */
   useEffect(() => {
     let ticking = false;
     const update = () => {
-      setScrolled(window.scrollY > 8);
+      /* Clamped because iOS rubber-banding reports a negative scrollY at the
+         top of the page and an over-scrolled one at the bottom. Both read as a
+         direction change, so both would flap the header at exactly the moment
+         the visitor has stopped scrolling. */
+      const y = Math.max(0, window.scrollY);
+      setScrolled(y > 8);
+
+      if (y <= HIDE_AFTER) {
+        /* Near the top the header is always present, whichever way the page
+           is moving. */
+        setHidden(false);
+        lastY.current = y;
+      } else {
+        const dy = y - lastY.current;
+        if (Math.abs(dy) > DIR_THRESHOLD) {
+          setHidden(dy > 0);
+          lastY.current = y;
+        }
+      }
       ticking = false;
     };
     const onScroll = () => {
@@ -148,6 +207,11 @@ export default function Header() {
     setLastPath(pathname);
     setOpenMobile(false);
     setOpenMenu(null);
+    /* A new page starts at the top with the nav in place. Without this, a
+       link followed while the header was hidden would land on a page whose
+       nav is missing until something scrolls. */
+    setHidden(false);
+    lastY.current = 0;
   }
 
   /* The drawer holds the page still behind it. */
@@ -203,9 +267,22 @@ export default function Header() {
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
+  /* Reasons to override a hide. The mobile drawer lives inside this element,
+     so hiding the header while it is open would take the open menu off screen
+     with it; the desktop dropdown is anchored to it and would fly away the
+     same way. In both cases the visitor is mid-interaction with the nav, which
+     is the one moment it must not move. */
+  const pinned = openMobile || openMenu !== null;
+
   return (
     <header
-      className={`sticky top-0 z-50 border-b transition-[background-color,padding,box-shadow,border-color] duration-300 ${
+      /* Capture, so focus landing anywhere inside — a keyboard user tabbing in
+         from the top of the page — brings the header back before they reach a
+         control they cannot see. */
+      onFocusCapture={() => setHidden(false)}
+      className={`sticky top-0 z-50 border-b transition-[background-color,padding,box-shadow,border-color,transform] duration-300 motion-reduce:transition-none ${
+        hidden && !pinned ? "-translate-y-full" : "translate-y-0"
+      } ${
         scrolled
           ? "border-ink/[0.08] bg-cream/92 py-2.5 shadow-[0_10px_24px_-16px_rgba(42,39,36,0.25)] backdrop-blur-md"
           : "border-ink/[0.06] bg-cream py-4"
@@ -214,18 +291,36 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 sm:px-8">
         {/* Logo + positioning line. The logo scales rather than changing its
             box, so the header firming up on scroll costs no layout shift. */}
-        <Link href="/" className="flex items-center gap-3.5" aria-label={`${BRAND.full} — home`}>
+        <Link
+          href="/"
+          className="flex min-w-0 items-center gap-2.5 sm:gap-3.5"
+          aria-label={`${BRAND.full} — home`}
+        >
           <Logo
-            className={`h-16 w-16 origin-left transition-transform duration-300 ${
+            className={`h-16 w-16 shrink-0 origin-left transition-transform duration-300 ${
               scrolled ? "scale-[0.875]" : "scale-100"
             }`}
           />
-          <span className="hidden border-l border-ink/10 pl-3.5 xl:block">
-            <span className="block font-display font-800 text-[13px] tracking-[0.08em] text-ink">
+          {/* Hidden ONLY in the lg-to-xl band. That is the one range where the
+              desktop nav is on screen but the window is still too narrow to
+              carry nav, lockup and call button together — at 1024px the three
+              want ~1050px and have ~960px, so something has to give and the
+              lockup is it, the logo beside it already saying the same thing.
+              Below lg the nav has collapsed into the drawer and the room is
+              free, so the lockup shows on phones and tablets. */}
+          <span className="block min-w-0 border-l border-ink/10 pl-2.5 lg:hidden xl:block xl:pl-3.5">
+            <span className="block font-display font-800 text-[11.5px] tracking-[0.06em] text-ink sm:text-[12px] xl:text-[13px] xl:tracking-[0.08em]">
               {BRAND.full.toUpperCase()}
             </span>
-            <span className="mt-0.5 block text-[9.5px] font-bold uppercase tracking-[0.13em] text-ink-soft/55">
-              {BRAND.positioning}
+            <span className="mt-0.5 block text-[8px] font-bold uppercase leading-[1.35] tracking-[0.1em] text-ink-soft/55 sm:text-[9px] xl:text-[9.5px] xl:tracking-[0.13em]">
+              {POS_HEAD}
+              {POS_TAIL && (
+                <>
+                  <span className="hidden sm:inline"> | </span>
+                  <br className="sm:hidden" />
+                  {POS_TAIL}
+                </>
+              )}
             </span>
           </span>
         </Link>
