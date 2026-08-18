@@ -18,7 +18,7 @@ const PRODUCT_COUNT = CATEGORIES.reduce((n, c) => n + c.products.length, 0);
    on /about. Confirm or remove before launch. The product and range counts
    are derived from the catalogue, so they can never drift. */
 const FIGURES = [
-  { to: 500, suffix: "+", text: null, label: "Active dealers", note: "A network already selling the brand" },
+  { to: 50, suffix: "+", text: null, label: "Active dealers", note: "Backed by 500+ retail counters" },
   { to: 12, suffix: "+", text: null, label: "Years in feed", note: "Formulation and milling experience" },
   { to: PRODUCT_COUNT, suffix: "", text: null, label: "Products to sell", note: `Across ${AVAILABLE_CATEGORIES.length} live ranges` },
   { to: null, suffix: "", text: "J&K", label: "Milled locally", note: "Short supply lines, faster refills" },

@@ -8,11 +8,13 @@ const PRODUCT_COUNT = CATEGORIES.reduce((n, c) => n + c.products.length, 0);
 
 /* ---------------- Trust strip ----------------
    `to` carries the counter target; `to: null` marks the one stat that isn't a
-   number (FSSAI), which renders `k` verbatim instead.
+   number (the certification marks), which renders `k` verbatim instead and is
+   set a size down, since letterforms run much wider than a two-digit numeral.
 
-   ⚠ "Years of feed expertise" and "Active dealers" are unverified template
-   figures inherited from the original build. Confirm or remove before launch.
-   The product count is derived from CATEGORIES, so it is always accurate. */
+   ⚠ "Years of feed expertise", "Active dealers" and "Retailers stocking us"
+   are unverified template figures inherited from the original build. Confirm
+   or remove before launch. The product count is derived from CATEGORIES, so it
+   is always accurate. */
 const STATS = [
   {
     to: 12,
@@ -30,10 +32,26 @@ const STATS = [
     ),
   },
   {
-    to: 500,
+    to: 50,
     suffix: "+",
     k: "",
     v: "Active dealers",
+    /* Hub-and-spoke: one mill feeding a distribution network */
+    icon: (
+      <path
+        d="M12 3.5a2 2 0 110 4 2 2 0 010-4zM5.5 16.5a2 2 0 110 4 2 2 0 010-4zM18.5 16.5a2 2 0 110 4 2 2 0 010-4zM12 7.5v5.5M5.5 16.5V13h13v3.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    ),
+  },
+  {
+    to: 500,
+    suffix: "+",
+    k: "",
+    v: "Retailers stocking us",
     icon: (
       <path
         d="M3.5 9L5 4.5h14L20.5 9M3.5 9h17M4.5 9v9.5a1 1 0 001 1h13a1 1 0 001-1V9M9.5 19.5v-5.5h5v5.5"
@@ -62,8 +80,8 @@ const STATS = [
   {
     to: null,
     suffix: "",
-    k: "FSSAI",
-    v: "Registered manufacturing",
+    k: "FSSAI · ISO",
+    v: "Registered & certified",
     icon: (
       <path
         d="M12 3l1.9 1.5 2.4-.2.8 2.3 2 1.3-.9 2.2.9 2.2-2 1.3-.8 2.3-2.4-.2L12 17l-1.9-1.5-2.4.2-.8-2.3-2-1.3.9-2.2-.9-2.2 2-1.3.8-2.3 2.4.2L12 3zM8.5 19.5L12 18l3.5 1.5M10 10.2l1.4 1.4 2.8-2.8"
@@ -99,9 +117,13 @@ export function TrustStrip() {
         />
       </svg>
 
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 sm:gap-6 sm:px-6 lg:grid-cols-4 lg:gap-8">
+      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 sm:gap-6 sm:px-6 lg:grid-cols-5 lg:gap-5">
         {STATS.map((s, i) => (
-          <Reveal key={s.v} delay={i * 0.08}>
+          <Reveal
+            key={s.v}
+            delay={i * 0.08}
+            className={i === STATS.length - 1 ? "col-span-2 lg:col-span-1" : ""}
+          >
             <div className="group relative h-full overflow-hidden rounded-3xl border border-cream-deep bg-white px-4 py-7 text-center shadow-soft transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lift sm:px-6">
               {/* Gold accent rule, brightest at the centre */}
               <span
@@ -115,7 +137,11 @@ export function TrustStrip() {
                 </svg>
               </div>
 
-              <div className="mt-4 font-display font-800 text-3xl text-orange sm:text-4xl">
+              <div
+                className={`mt-4 font-display font-800 text-orange ${
+                  s.to !== null ? "text-3xl sm:text-4xl" : "text-2xl sm:text-3xl lg:text-2xl"
+                }`}
+              >
                 {s.to !== null ? <CountUp to={s.to} suffix={s.suffix} /> : s.k}
               </div>
 

@@ -23,7 +23,7 @@ const FIGURES = [
   { to: 12, suffix: "+", text: null, label: "Years in feed" },
   { to: 500, suffix: "+", text: null, label: "Dealers & retailers" },
   { to: PRODUCT_COUNT, suffix: "", text: null, label: "Products in the range" },
-  { to: null, suffix: "", text: "FSSAI", label: "Registered manufacturing" },
+  { to: null, suffix: "", text: "FSSAI · ISO", label: "Registered & certified" },
 ];
 
 /* ---------------- Commitment ----------------
@@ -116,7 +116,11 @@ export default function AboutPage() {
                       } ${i < 2 ? "border-b border-ink/10" : ""}`}
                       style={{ animationDelay: `${i * 90}ms` }}
                     >
-                      <dt className="font-display font-800 text-3xl tracking-tight text-terracotta tabular-nums sm:text-4xl">
+                      <dt
+                        className={`font-display font-800 tracking-tight text-terracotta tabular-nums ${
+                          f.to !== null ? "text-3xl sm:text-4xl" : "text-2xl sm:text-3xl"
+                        }`}
+                      >
                         {f.to !== null ? <CountUp to={f.to} suffix={f.suffix} /> : f.text}
                       </dt>
                       <dd className="mt-1.5 text-[13.5px] text-ink-soft">{f.label}</dd>
