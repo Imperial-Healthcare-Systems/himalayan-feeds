@@ -9,7 +9,18 @@ const POSTER_SRC = "/images/himalayan-hero-ranges-poster.webp";
    browser that saw it will keep serving that copy no matter what we deploy.
    A new name is the only way past it. If the artwork is re-cut again, rename
    again. */
-const BANNER_SRC = "/images/hero-banner-wide.webp";
+/* The banner is drawn to two shapes, not cropped to them. Both are served at
+   their own aspect ratio and the hero frame is built to match (see Hero.tsx),
+   so neither is ever cropped and neither needs padding. */
+const BANNER_PC_SRC = "/images/hero-banner-pc.e8efa889.webp"; /* 1706x922, 1.850:1 */
+const BANNER_PHONE_SRC = "/images/hero-banner-phone.499fc15a.webp"; /* 864x1821, 0.474:1 */
+
+/* Where the artwork changes shape. Below this the portrait cut is served and
+   the hero frame is portrait with it; at and above, the landscape pair. Kept
+   in one place because the media query here and the aspect ratios in Hero.tsx
+   have to agree — if they drift, the frame stops matching the art and the crop
+   comes back. */
+const BANNER_SWITCH = "(min-width: 768px)";
 
 /* How long the banner holds before the clip runs again. The clip is 10.0s and
    plays once through, so the cycle is clip → banner → clip ≈ 16s. */
@@ -36,7 +47,7 @@ const FRAMING = "object-[50%_50%]";
    A two-slide carousel: the four-range clip plays once through, the banner
    holds for BANNER_MS, and it repeats.
 
-   THE BANNER IS NOT A PHOTOGRAPH. hero-banner-wide.webp is finished art with
+   THE BANNER IS NOT A PHOTOGRAPH. Both cuts are finished art with
    its own logo, headline, product lineup and phone strip, so the site's own
    headline and gradients fade out while it is up — the banner already says
    "Nutrition for A BETTER TOMORROW" across its middle and carries the logo
@@ -47,41 +58,37 @@ const FRAMING = "object-[50%_50%]";
    keep the poster — a crossfading slideshow is motion, and the poster is frame
    0 of the clip, so nothing looks broken.
 
-   ⚠ THE SHIPPED BANNER IS PADDED ARTWORK, NOT THE FILE THE CLIENT SUPPLIED.
-   object-cover fills the frame, which is the requirement, but it pays for that
-   by cropping — and the hero band runs from about 2.0:1 (1440x900) to 2.7:1
-   (ultrawide). The supplied file is 1774x887, exactly 2.0:1, the narrowest
-   shape in that range, so every wider window trimmed its top and bottom: 6% on
-   a 1080p screen, 17% on the client's, 27% on an ultrawide. The logo sits on
-   the top edge and the phone strip on the bottom one, so that trim went
-   straight through the design.
+   THE FRAME IS BUILT ROUND THE ART, NOT THE OTHER WAY ROUND. Every earlier cut
+   of this hero fixed the frame first — a viewport-height band — then fought to
+   get a fixed-composition banner into it. There is no winning that: cover
+   crops the design, contain leaves bars, and the padded-artwork stopgap that
+   preceded this only moved the crop into 319px of mirrored blur either side,
+   which is exactly what showed as the "left and right adjustments" on a window
+   whose ratio landed between the two.
 
-   So the file in public/ was widened to 2412x887 (2.72:1) — wider than the
-   widest box — by adding 319px of padding each side. Cover now scales by
-   HEIGHT at every desktop shape, the full design always survives, and the
-   overflow comes off padding instead. The padding is a mirrored copy of the
-   edge under a 34px blur, darkened 6%: mirroring alone would duplicate the cow
-   and the goat, and the blur pushes both into bokeh. On most windows it is
-   cropped away unseen; only an ultrawide shows much of it.
+   The client has now supplied the banner drawn to two shapes, so the fix is
+   the real one: Hero.tsx sets the section's aspect-ratio to the artwork's own,
+   switching at BANNER_SWITCH exactly as the <picture> below does. Frame ratio
+   equals art ratio, so object-cover crops nothing, contain would bar nothing,
+   and the whole design is on screen at every width. Widen the window and it
+   scales; there is nothing left to crop.
 
-   Rebuild it from source-assets/hero/hero_image.png, never from the padded
-   file — padding the padding compounds.
+   Consequences worth knowing before changing any of this:
+     - The hero's height now follows its WIDTH, not the viewport height. On a
+       1440px window it lands at ~778px, about one screenful under the header,
+       which is why the old 100svh maths is gone rather than merged into it.
+     - The clip and poster still object-cover into that frame. They are
+       photography, so cropping them is free — but the frame is portrait below
+       768px, and a 16:9 clip in a 0.47:1 box shows about a quarter of its
+       width. That was already true of the old portrait frame; it is simply
+       more pronounced now.
+     - Both files are served at native size: 1706px wide (PC) and 864px
+       (phone). Above those widths the browser upscales. ⚠ For a crisp hero on
+       a 2560px monitor the landscape cut wants redrawing at ~2560x1384 — same
+       1.850:1, no reframing — and the portrait at ~1080x2276.
 
-   Padding only rescues the WIDE frames. Under xl the hero is far taller than
-   2.7:1 and no amount of side padding helps, so that range is contained on a
-   blurred backdrop instead — see the banner slide below.
-
-   This is all a stopgap for artwork that does not exist yet. The real set is
-   three files, each drawn to its own frame with the scene painted to all four
-   edges and nothing important outside the safe zone:
-
-     wide     2560x960   (2.67:1)   safe 1920x940    xl and up
-     tablet   1600x1840  (0.87:1)   safe 1500x1760   640-1279px
-     phone    1200x1850  (0.65:1)   safe 1050x1540   under 640px
-
-   The portrait two are a re-layout, not a crop — nine bags in a row cannot be
-   cropped narrow, they have to be restacked. When they land, serve them with
-   srcset and delete the padding and the blur. */
+   source-assets/hero/widen_banner.py and hero-banner-wide.webp belong to the
+   padding stopgap and are now dead. Do not reach for them. */
 export default function HeroCarousel({ children }: { children: ReactNode }) {
   /* Starts "poster" so the first client render matches the server-rendered
      markup exactly (no hydration mismatch); the effect upgrades post-hydration
@@ -195,33 +202,22 @@ export default function HeroCarousel({ children }: { children: ReactNode }) {
               onBanner ? "opacity-100" : "opacity-0"
             }`}
           >
-            {/* Below xl the frame is simply too tall for a 2.7:1 banner.
-                Filling it means cropping to the width of the frame, and at
-                these shapes that leaves 29% of the design on a phone and 45%
-                on a tablet — the logo, the phone strip and most of the lineup
-                gone. Re-centring does not help; it is already centred, and a
-                better-placed third of a banner is still a third of a banner.
-
-                So under xl the whole banner is shown, contained, with a
-                blurred over-scaled copy filling the frame behind it. Same
-                file, one download, no letterbox bars. It is small, but it is
-                all there. From xl up the frame is wide enough that cover
-                shows 100% of the design, so it fills properly. */}
-            {/* eslint-disable-next-line @next/next/no-img-element -- same
-                reasoning as the poster above. */}
-            <img
-              src={BANNER_SRC}
-              alt=""
-              aria-hidden="true"
-              className={`${cover} scale-110 blur-2xl xl:hidden`}
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element -- ditto. */}
-            <img
-              src={BANNER_SRC}
-              alt=""
-              aria-hidden="true"
-              className={`absolute inset-0 h-full w-full object-contain ${FRAMING} xl:object-cover`}
-            />
+            {/* <picture> rather than two <img>s behind a CSS toggle: the
+                browser picks one source and downloads only that, so a phone
+                never pays for the 358 KB landscape cut. object-cover is here
+                as sub-pixel insurance, not to fit anything — the frame is
+                already the artwork's own ratio, so it has nothing to crop. */}
+            <picture>
+              <source media={BANNER_SWITCH} srcSet={BANNER_PC_SRC} />
+              {/* eslint-disable-next-line @next/next/no-img-element -- same
+                  reasoning as the poster above. */}
+              <img
+                src={BANNER_PHONE_SRC}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </picture>
           </div>
         </>
       )}
