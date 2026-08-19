@@ -291,8 +291,15 @@ export const SOCIALS = [
 
    ORDER IS MEANINGFUL. Products run in the animal's own sequence — youngest
    stage first, then through to adult, then whole-herd formats and add-ons.
-   The catalogue renders them in array order and numbers them accordingly, so
-   reordering this array reorders the page. Keep the sequence intact.
+   Keep the sequence intact: it is the source of truth for ALL_PRODUCTS, the
+   counts and the admin store.
+
+   ⚠ On a GROUPED range that is no longer the order the page shows. Bands come
+   from `groups` and render in ITS order, and groupedProducts numbers straight
+   through the bands as laid out — so on cattle, where Milking Feed has been
+   promoted to lead, the rail follows the band order rather than this array.
+   An ungrouped range still renders exactly in array order. Change display
+   order in `groups`; change meaning here.
 
    ---- SUB-CATEGORIES ----
    `groups` splits a range into ordered sub-categories and `Product.group`
@@ -598,10 +605,20 @@ export const CATEGORIES: Category[] = [
     launchNote: null,
     lifecycle: ["Calf", "Growing calf", "Heifer", "Transition", "In milk", "Higher yield", "Peak yield"],
     groups: [
+      /* ⚠ THIS ARRAY IS ORDERED COMMERCIALLY, NOT BIOLOGICALLY. Milking Feed
+         leads at the client's instruction: it is the volume line and what most
+         visitors arrive looking for, so it should not sit third behind two
+         bands about animals that are not yet earning. Young Stock takes the
+         place it vacated.
+
+         That is a deliberate departure from the life-stage sequence the flat
+         `products` array still follows — see the note above CATEGORIES. Bands
+         render in THIS order and groupedProducts numbers straight through
+         them, so the rail counts 01, 02, 03… down the page as displayed. */
       {
-        slug: "young-stock",
-        name: "Young Stock",
-        note: "The animals earning nothing today. What they are fed now decides what they milk later.",
+        slug: "milking",
+        name: "Milking Feed",
+        note: "Feed for Performance. Three grades on one ladder — step up as you ask more of the animal.",
       },
       {
         slug: "transition",
@@ -609,9 +626,9 @@ export const CATEGORIES: Category[] = [
         note: "The few weeks either side of calving, where a lactation is won or lost.",
       },
       {
-        slug: "milking",
-        name: "Milking Feed",
-        note: "Feed for Performance. Three grades on one ladder — step up as you ask more of the animal.",
+        slug: "young-stock",
+        name: "Young Stock",
+        note: "The animals earning nothing today. What they are fed now decides what they milk later.",
       },
       {
         slug: "supplements",
