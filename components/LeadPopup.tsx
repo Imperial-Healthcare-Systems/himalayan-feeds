@@ -22,17 +22,32 @@ import {
        than by PageShell — which is also why it never appeared at first: the
        homepage assembles its chrome inline and does not use PageShell, so the
        one page it was wanted on was the one page it was absent from.
-     - Once per visit, not once per week. Dismissing it stops it for the rest
-       of the session; opening the site again brings it back. Sending an
-       enquiry stops it for good — nobody who has already written in wants
-       asking again, and we do not want the duplicate lead.
-     - Never before the five seconds are up.
+     - Five seconds after landing, then again 12-17 seconds after each
+       dismissal, up to MAX_SHOWS times in a visit.
+     - Sending an enquiry stops it for good — nobody who has already written in
+       wants asking again, and we do not want the duplicate lead.
+     - Once MAX_SHOWS is spent it stays down for the rest of the visit, and is
+       back next time the site is opened.
 
    It is a modal, so it owes the usual debts: labelled by its heading, focus
    moved in and restored on close, Escape and backdrop both dismiss, tab held
    inside while open, and the page behind it held still. */
 
-const OPEN_AFTER_MS = 5_000;
+const FIRST_OPEN_MS = 5_000;
+
+/* The gap before it comes back after a dismissal. A RANGE, not a fixed value,
+   picked fresh each time: a panel returning on the exact same beat reads as a
+   machine pestering you, and the variation costs nothing. */
+const RETURN_MIN_MS = 12_000;
+const RETURN_MAX_MS = 17_000;
+
+/* ⚠ TOTAL APPEARANCES PER VISIT, first one included. This is the only thing
+   standing between "comes back once more" and a modal that reopens every
+   fifteen seconds for as long as someone stays on the page — which is a trap,
+   not a prompt, and would cost more leads than it wins. Three is a deliberate
+   ceiling, not a technical limit: raise or lower this one number to change how
+   insistent it is. */
+const MAX_SHOWS = 3;
 
 /* Dismissal lasts THE VISIT, not a week, so the panel is back the next time
    someone opens the site — which is what "always show it on the homepage" has
@@ -134,6 +149,10 @@ export default function LeadPopup() {
   const [path, setPath] = useState<PathKey | null>(null);
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
+  /* How many times it has opened THIS visit — drives the return schedule and
+     the MAX_SHOWS ceiling. Deliberately not persisted: the count is about this
+     visit, and next visit starts fresh. */
+  const [shows, setShows] = useState(0);
 
   const [f, setF] = useState({
     range: CATEGORIES[0].name,
@@ -153,18 +172,37 @@ export default function LeadPopup() {
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setF((prev) => ({ ...prev, [k]: e.target.value }));
 
-  /* ---- open on a timer ---- */
+  /* ---- schedule the next appearance ----
+     One effect covers both the first showing and every return, because they
+     differ only in the delay. It re-runs whenever the panel closes, which is
+     what queues the next one; `shows` is the guard that stops it queueing
+     forever. Math.random() is safe here — it only ever runs in an effect, so
+     it cannot desync a server render. */
   useEffect(() => {
+    if (open || done) return;
+    if (shows >= MAX_SHOWS) return;
     if (alreadyAnswered()) return;
-    const t = window.setTimeout(() => setOpen(true), OPEN_AFTER_MS);
+
+    const delay =
+      shows === 0
+        ? FIRST_OPEN_MS
+        : RETURN_MIN_MS + Math.random() * (RETURN_MAX_MS - RETURN_MIN_MS);
+
+    const t = window.setTimeout(() => {
+      setOpen(true);
+      setShows((n) => n + 1);
+    }, delay);
     return () => window.clearTimeout(t);
-  }, []);
+  }, [open, done, shows]);
 
   const close = useCallback(() => {
     setOpen(false);
-    remember("dismissed");
     restoreFocus.current?.focus();
-  }, []);
+    /* Only the LAST dismissal is written down. The earlier ones are answered
+       by the effect above scheduling a return instead, and recording them
+       would silence the visit before the returns had happened. */
+    if (shows >= MAX_SHOWS) remember("dismissed");
+  }, [shows]);
 
   /* ---- modal behaviour: scroll lock, focus, Escape, tab containment ---- */
   useEffect(() => {
