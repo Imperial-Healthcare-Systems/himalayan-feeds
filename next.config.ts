@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /* nodemailer is left out of the server bundle. It resolves transports and
+     TLS options at runtime and reaches for optional native deps, which a
+     bundler cannot follow — bundling it produces a build that looks fine and
+     throws on the first send. See lib/mail.ts. */
+  serverExternalPackages: ["nodemailer"],
+
   /* Every route on this site is static, so the only images the optimiser
      handles are the four category photos. AVIF first buys another ~20% over
      WebP on those, and the year-long cache TTL is safe because filenames are

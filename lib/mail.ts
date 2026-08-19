@@ -1,3 +1,4 @@
+import nodemailer from "nodemailer";
 import { BRAND } from "./site";
 import { enquiryText, type EnquiryKind, type EnquiryRow } from "./enquiry";
 
@@ -15,22 +16,34 @@ import { enquiryText, type EnquiryKind, type EnquiryRow } from "./enquiry";
    deploying this changes nothing until the key exists, rather than silently
    dropping leads.
 
-   Two providers, both plain REST over fetch, so neither adds a dependency:
+   Three transports, tried in this order. The first one configured wins:
 
-     RESEND_API_KEY      Resend. Sends FROM our own domain, so replies thread
-                         properly and the mail is not from a third party. Needs
-                         himalayanfeeds.com verified in Resend by DNS record,
-                         and ENQUIRY_FROM set to an address on it. The better
-                         answer, and the slower one to set up.
+     SMTP_HOST + SMTP_USER + SMTP_PASS      nodemailer, over the mailbox's own
+                         SMTP server. This is the primary path: mail is sent by
+                         info@himalayanfeeds.com itself, so it lands in that
+                         account's Sent folder, replies thread naturally, and
+                         no third party ever holds the leads. It needs no DNS
+                         change and no API account — just the mailbox password.
+                         For a Hostinger-hosted mailbox that is
+                         smtp.hostinger.com on port 465.
 
-     WEB3FORMS_ACCESS_KEY  Web3Forms. A key is issued against an email address
-                         and everything is forwarded there, so the destination
-                         is fixed by whoever created the key — TO below is NOT
-                         honoured. No DNS, no domain verification, works in
-                         minutes. The pragmatic answer.
+     RESEND_API_KEY      Resend's REST API. Needs himalayanfeeds.com verified
+                         in Resend by DNS record and ENQUIRY_FROM set to an
+                         address on it.
 
-   Resend wins if both are set. Neither is committed; set them in the Vercel
-   project's environment variables, not in the repo.
+     WEB3FORMS_ACCESS_KEY  Web3Forms. The key is issued against an address and
+                         everything is forwarded there, so the destination is
+                         fixed by whoever created the key — TO below is NOT
+                         honoured.
+
+   Nothing is committed. Set the variables in the Vercel project's environment
+   settings; .env.example lists them with no values.
+
+   ⚠ SMTP_PASS is a real mailbox password. Anyone holding it can read and send
+   as info@himalayanfeeds.com, so it belongs in Vercel's environment settings
+   and nowhere else — not in this repo, not in a screenshot, not in chat. If
+   the mailbox supports an app-specific password, use that instead so it can be
+   revoked without changing the account password.
    ========================================================================== */
 
 /** Where enquiries are meant to land. Honoured by Resend; see the Web3Forms
@@ -38,7 +51,7 @@ import { enquiryText, type EnquiryKind, type EnquiryRow } from "./enquiry";
 const TO = BRAND.email;
 
 export type MailResult =
-  | { ok: true; via: "resend" | "web3forms" }
+  | { ok: true; via: "smtp" | "resend" | "web3forms" }
   | { ok: false; reason: "unconfigured" | "provider"; detail?: string };
 
 const SUBJECT: Record<EnquiryKind, string> = {
@@ -62,6 +75,67 @@ function replyTo(rows: EnquiryRow[]): string | undefined {
 function senderName(rows: EnquiryRow[]): string {
   const hit = rows.find(([label]) => /^name|full name/i.test(label));
   return hit?.[1].trim() || "Website visitor";
+}
+
+/* ---------------- SMTP, via nodemailer ----------------
+   A fresh transport per call rather than one held at module scope. A serverless
+   function is frozen between invocations and a pooled socket does not survive
+   that — it comes back half-dead and the first send after a cold spell fails.
+   Opening a connection costs a few hundred milliseconds on a form submit; a
+   silently dropped lead costs more. */
+function smtpConfigured() {
+  return Boolean(
+    process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS,
+  );
+}
+
+async function viaSmtp(
+  subject: string,
+  body: string,
+  rows: EnquiryRow[],
+): Promise<MailResult> {
+  if (!smtpConfigured()) return { ok: false, reason: "unconfigured" };
+
+  /* 465 is implicit TLS and 587 is STARTTLS. Deriving `secure` from the port
+     rather than asking for it separately removes the single most common way to
+     misconfigure this — the two have to agree or the handshake hangs until it
+     times out. SMTP_SECURE can still override for an unusual server. */
+  const port = Number(process.env.SMTP_PORT ?? 465);
+  const secure = process.env.SMTP_SECURE
+    ? process.env.SMTP_SECURE === "true"
+    : port === 465;
+
+  try {
+    const transport = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port,
+      secure,
+      auth: { user: process.env.SMTP_USER!, pass: process.env.SMTP_PASS! },
+      /* A form submit that cannot finish should fail and fall back to the
+         WhatsApp handoff, not hold the request open until the platform kills
+         it. Vercel's default function timeout is short enough that an
+         unbounded SMTP dial would be cut off mid-flight with nothing logged. */
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 15_000,
+    });
+
+    await transport.sendMail({
+      /* The envelope sender must be the authenticated mailbox — most servers
+         reject a From: they did not authenticate, and the ones that accept it
+         get the mail filed as spam. The visitor's own address goes in
+         replyTo, which is what actually matters for answering. */
+      from: `"${BRAND.full} website" <${process.env.SMTP_USER}>`,
+      to: process.env.ENQUIRY_TO ?? TO,
+      subject,
+      text: body,
+      replyTo: replyTo(rows),
+    });
+
+    return { ok: true, via: "smtp" };
+  } catch (e) {
+    return { ok: false, reason: "provider", detail: String(e) };
+  }
 }
 
 async function viaResend(
@@ -144,6 +218,7 @@ export async function sendEnquiryMail(
   const line = `${SUBJECT[kind]} — ${subject}`;
   const body = enquiryText(kind, subject, rows);
 
+  if (smtpConfigured()) return viaSmtp(line, body, rows);
   if (process.env.RESEND_API_KEY) return viaResend(line, body, rows);
   if (process.env.WEB3FORMS_ACCESS_KEY) return viaWeb3Forms(line, body, rows);
   return { ok: false, reason: "unconfigured" };
