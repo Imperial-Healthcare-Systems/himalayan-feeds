@@ -2,12 +2,14 @@ import Header from "@/components/Header";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
+import SearchTerms from "@/components/SearchTerms";
 import Certifications from "@/components/Certifications";
 import BrandLockup from "@/components/BrandLockup";
 import Reveal from "@/components/Reveal";
 import { TrustStrip, WhyUs, DealershipBand, Testimonials } from "@/components/Sections";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
+import LeadPopup from "@/components/LeadPopup";
 
 /* ---------------- Homepage ---------------- */
 export default function Home() {
@@ -36,6 +38,7 @@ export default function Home() {
 
         {/* Product range */}
         <ProductGrid />
+        <SearchTerms />
         <WhyUs />
 
         {/* Credibility */}
@@ -48,12 +51,11 @@ export default function Home() {
 
       <Footer />
       <WhatsAppFloat />
-    </>
-  );
-}
-import LeadPopup from "@/components/LeadPopup";
       {/* Homepage only, and mounted here rather than in PageShell precisely
           because this page does not use PageShell — putting it there reached
           every page except this one. Opens itself five seconds in; the rest of
           its rules about when to stay away live in the component. */}
       <LeadPopup />
+    </>
+  );
+}

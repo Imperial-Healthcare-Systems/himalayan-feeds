@@ -648,8 +648,13 @@ export const CATEGORIES: Category[] = [
         note: "D. Mash — an energy-rich dairy mash for milking ewes and does, in three grades.",
       },
     ],
+    /* Carries two of the SEARCH_TERMS phrases in plain sentences rather than
+       as a keyword list — this string is the range's visible sub-line AND its
+       meta description, so it has to read as English to a farmer and still
+       answer the query. Descriptive throughout: who the feed is for, not what
+       it will yield. */
     blurb:
-      "Feed for every stage of the dairy animal — plus a sheep and goat mash. Built for milk production, herd health and steady growth.",
+      "Cattle feed for high milk production, for HF, Jersey and crossbred cows and for buffalo — plus a sheep and goat mash. Feed for every stage of the dairy animal.",
     intro:
       "A dairy animal converts feed into milk every single day, and the quality of that conversion is the whole business. The range follows the animal's own life — from her first weeks as a calf, through calving, and on into peak lactation. Every cattle bag is formulated for cows and buffalo alike, and dosed for both. The sheep and goat mash sits at the foot of the range.",
     image: "/images/cattle.webp",
@@ -1035,6 +1040,53 @@ export const CATALOGUE_HEADER = {
   title: "Cattle, Poultry & Sheep Feed",
   sub: `${LIVE_RANGES} ranges available now, listed in the animal's own order — from its first weeks through to full production. Fish feed is in development.`,
 };
+
+/* ---------------- Search terms ----------------
+   The phrases farmers and dealers actually type, surfaced as real navigation
+   on the homepage rather than buried in a meta tag. Each one lands on the part
+   of the catalogue it describes.
+
+   ⚠ READ THIS BEFORE REWORDING ANY OF THEM. They describe WHO THE FEED IS FOR,
+   never what it will produce. "Cattle Feed for 10 Litre Milk Cow" names the
+   animal being fed — a cow already milking ten litres, who eats about 4 kg a
+   day at the rate the bag itself prints, 400 g per litre. It is NOT a claim
+   that the feed delivers ten litres, and it must not drift into one. No
+   guaranteed yield, no "increases milk by", no "up to" figures: the site makes
+   no promise about output anywhere, and these are the lines most likely to
+   erode that by accident.
+
+   ⚠ "Best Cattle Feed in India" is a superlative, and nothing on this site
+   substantiates it — no test, no award, no comparison. It is the client's own
+   wording, published at their instruction. ASCI's code treats unsupported
+   superlatives as misleading, so it is worth having something behind it, or
+   softening it, before the site is promoted. */
+export const SEARCH_TERMS = [
+  {
+    term: "Best Cattle Feed in India",
+    note: "Balanced cattle feed, batch-tested and antibiotic-free.",
+    href: "/products/cattle-feed",
+  },
+  {
+    term: "Best Cattle Feed for HF Cow",
+    note: "For HF, Jersey and crossbred cows — and dosed for buffalo too.",
+    href: "/products/cattle-feed",
+  },
+  {
+    term: "Cattle Feed for High Milk Production",
+    note: "The milking grades, from 8000 through to 10000.",
+    href: "/products/cattle-feed#milking",
+  },
+  {
+    term: "Cattle Feed for 10 Litre Milk Cow",
+    note: "About 4 kg a day at the bag's printed 400 g per litre.",
+    href: "/products/cattle-feed#milking",
+  },
+  {
+    term: "Cattle Feed for 15 Litre Milk Cow",
+    note: "About 6 kg a day at the same printed rate.",
+    href: "/products/cattle-feed#milking",
+  },
+];
 
 export const getCategory = (slug: string) =>
   CATEGORIES.find((c) => c.slug === slug);

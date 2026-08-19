@@ -47,6 +47,15 @@ export const metadata: Metadata = {
     "Animal nutrition from the Himalayan region. Scientifically formulated cattle feed and poultry feed for farmers, dairy owners, poultry farmers, dealers and distributors.",
   applicationName: BRAND.full,
   keywords: [
+    /* The five the client asked to compete on. Kept identical to
+       SEARCH_TERMS in lib/site.ts, which renders them on the homepage — a
+       keyword that appears in the head and nowhere on the page is the kind
+       search engines discount. */
+    "best cattle feed in India",
+    "best cattle feed for HF cow",
+    "cattle feed for high milk production",
+    "cattle feed for 10 litre milk cow",
+    "cattle feed for 15 litre milk cow",
     "cattle feed",
     "poultry feed",
     "animal nutrition",
