@@ -51,3 +51,9 @@ export default function Home() {
     </>
   );
 }
+import LeadPopup from "@/components/LeadPopup";
+      {/* Homepage only, and mounted here rather than in PageShell precisely
+          because this page does not use PageShell — putting it there reached
+          every page except this one. Opens itself five seconds in; the rest of
+          its rules about when to stay away live in the component. */}
+      <LeadPopup />

@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
 import { BRAND, CATEGORIES } from "@/lib/site";
 import {
   enquiryHref,
@@ -11,7 +10,7 @@ import {
 } from "@/lib/enquiry";
 
 /* ---------------- Timed lead capture ----------------
-   A four-step enquiry that opens itself ten seconds in. Two paths — become a
+   A four-step enquiry that opens itself five seconds in. Two paths — become a
    dealer, or ask for a quote — because those are the only two things the site
    actually wants a stranger to do, and asking which one first means the rest
    of the questions can be the right ones.
@@ -19,25 +18,37 @@ import {
    Interrupting someone is a cost, so the rules about when NOT to appear matter
    more than the panel itself:
 
-     - Never on /contact or /dealership. Covering a lead form with a lead form
-       is the one place this is pure obstruction — they are already doing the
-       thing it is asking for.
-     - Never twice. A submit silences it permanently; a dismissal silences it
-       for DISMISS_DAYS. Both live in localStorage, so a visitor who said no
-       is not asked again on the next page or the next visit.
-     - Never before the ten seconds are up on the page they landed on, and the
-       timer restarts on navigation rather than firing mid-click.
+     - HOMEPAGE ONLY. It is mounted by app/page.tsx and nowhere else, rather
+       than by PageShell — which is also why it never appeared at first: the
+       homepage assembles its chrome inline and does not use PageShell, so the
+       one page it was wanted on was the one page it was absent from.
+     - Once per visit, not once per week. Dismissing it stops it for the rest
+       of the session; opening the site again brings it back. Sending an
+       enquiry stops it for good — nobody who has already written in wants
+       asking again, and we do not want the duplicate lead.
+     - Never before the five seconds are up.
 
    It is a modal, so it owes the usual debts: labelled by its heading, focus
    moved in and restored on close, Escape and backdrop both dismiss, tab held
    inside while open, and the page behind it held still. */
 
-const OPEN_AFTER_MS = 10_000;
-const DISMISS_DAYS = 7;
-const STORAGE_KEY = "hf_lead_popup_v1";
+const OPEN_AFTER_MS = 5_000;
 
-/** Where a lead form already exists, so the panel would be in the way. */
-const SUPPRESSED = ["/contact", "/dealership"];
+/* Dismissal lasts THE VISIT, not a week, so the panel is back the next time
+   someone opens the site — which is what "always show it on the homepage" has
+   to mean if it is also to stay dismissible. sessionStorage is exactly that
+   lifetime: it survives navigation and reload, and dies with the tab.
+
+   Submitting is different and is remembered for good, in localStorage. Someone
+   who has already sent an enquiry does not want to be asked again on every
+   visit, and we do not want the duplicate leads.
+
+   ⚠ Both keys are versioned. Earlier builds wrote a 7-day silence under
+   hf_lead_popup_v2, and anyone carrying one would not see the panel for a
+   week. The v3 names retire those records. Bump again on any change that
+   should re-ask people who have already answered. */
+const DISMISS_KEY = "hf_lead_popup_dismissed_v3";
+const SENT_KEY = "hf_lead_popup_sent_v3";
 
 const PATHS = [
   {
@@ -91,36 +102,33 @@ const BUYER_TYPES = [
 const TOTAL_STEPS = 4;
 
 /* ---------------- Dismissal memory ---------------- */
-function readSilencedUntil(): number {
-  if (typeof window === "undefined") return 0;
+/** True only if this visitor has already answered — dismissed it this visit,
+    or sent an enquiry at any point. Everything else means show it. */
+function alreadyAnswered(): boolean {
+  if (typeof window === "undefined") return true;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return 0;
-    const v = JSON.parse(raw) as { until?: number };
-    return typeof v.until === "number" ? v.until : 0;
+    if (window.localStorage.getItem(SENT_KEY)) return true;
+    if (window.sessionStorage.getItem(DISMISS_KEY)) return true;
+    return false;
   } catch {
-    /* Private mode, a full quota, or someone else's key in the slot. Treating
-       an unreadable record as "never asked" is the safe way round: the panel
-       may show once more than it should, rather than a broken record silencing
-       it forever. */
-    return 0;
+    /* Private mode, a full quota, or someone else's value in the slot.
+       Treating unreadable storage as "never asked" is the safe way round: the
+       panel may show once more than it should, rather than a broken record
+       silencing it for good. */
+    return false;
   }
 }
 
-function silence(days: number | "forever") {
+function remember(answer: "dismissed" | "sent") {
   try {
-    const until =
-      days === "forever"
-        ? Number.MAX_SAFE_INTEGER
-        : Date.now() + days * 24 * 60 * 60 * 1000;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ until }));
+    if (answer === "sent") window.localStorage.setItem(SENT_KEY, "1");
+    else window.sessionStorage.setItem(DISMISS_KEY, "1");
   } catch {
     /* Nothing to do — worst case it asks again next visit. */
   }
 }
 
 export default function LeadPopup() {
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [path, setPath] = useState<PathKey | null>(null);
@@ -147,21 +155,16 @@ export default function LeadPopup() {
 
   /* ---- open on a timer ---- */
   useEffect(() => {
-    if (SUPPRESSED.includes(pathname)) return;
-    if (Date.now() < readSilencedUntil()) return;
-
+    if (alreadyAnswered()) return;
     const t = window.setTimeout(() => setOpen(true), OPEN_AFTER_MS);
     return () => window.clearTimeout(t);
-  }, [pathname]);
+  }, []);
 
-  const close = useCallback(
-    (permanent = false) => {
-      setOpen(false);
-      silence(permanent ? "forever" : DISMISS_DAYS);
-      restoreFocus.current?.focus();
-    },
-    [],
-  );
+  const close = useCallback(() => {
+    setOpen(false);
+    remember("dismissed");
+    restoreFocus.current?.focus();
+  }, []);
 
   /* ---- modal behaviour: scroll lock, focus, Escape, tab containment ---- */
   useEffect(() => {
@@ -230,7 +233,7 @@ export default function LeadPopup() {
     if (!mailed) window.open(enquiryHref(kind, subject, r), "_blank");
     setSending(false);
     setDone(true);
-    silence("forever");
+    remember("sent");
   };
 
   const canContinue =
@@ -255,7 +258,7 @@ export default function LeadPopup() {
       <button
         type="button"
         aria-label="Close"
-        onClick={() => close()}
+        onClick={close}
         className="absolute inset-0 h-full w-full cursor-default bg-ink/55 backdrop-blur-[2px] motion-safe:animate-fade"
       />
 
@@ -267,7 +270,7 @@ export default function LeadPopup() {
         {/* ---- Brand panel. Hidden on phones, where it would push the
                questions below the fold and cost the whole point of the
                panel. ---- */}
-        <div className="relative hidden overflow-hidden bg-gradient-to-br from-leaf-dark via-leaf-dark to-ink p-8 md:block">
+        <div className="relative hidden overflow-hidden gradient-orange p-8 md:block">
           <span
             aria-hidden
             className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10 blur-2xl motion-safe:animate-bloom"
@@ -344,7 +347,7 @@ export default function LeadPopup() {
                 within one working day.
               </p>
               <button
-                onClick={() => close(true)}
+                onClick={close}
                 className="mt-7 rounded-full gradient-orange px-7 py-3 text-sm font-semibold text-white shadow-soft transition-all hover:shadow-lift"
               >
                 Close
@@ -352,13 +355,24 @@ export default function LeadPopup() {
             </div>
           ) : (
             <>
-              {/* Progress */}
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink-soft/60">
+              {/* Progress.
+                  The right padding is not decoration: the close button is
+                  absolutely positioned over this corner of the panel, 36px
+                  wide and 12px in from the edge, so it eats 24px of this row
+                  on a phone and 16px at sm. Without the reserve it sat on top
+                  of the percentage and clipped it to "25% COMPL". Both labels
+                  are nowrap for the same reason — wrapping them into the
+                  narrow gap is not a better failure than clipping.
+
+                  "complete" is dropped below sm. Even clear of the button the
+                  two labels plus their tracking do not fit a 310px row, and
+                  the number is the part being read. */}
+              <div className="flex items-center justify-between gap-3 pr-9 sm:gap-4 sm:pr-6">
+                <span className="whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.16em] text-ink-soft/60">
                   Step {step} of {TOTAL_STEPS}
                 </span>
-                <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-leaf-dark">
-                  {pct}% complete
+                <span className="whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.16em] text-terracotta-dark">
+                  {pct}%<span className="hidden sm:inline"> complete</span>
                 </span>
               </div>
               <div
@@ -370,7 +384,7 @@ export default function LeadPopup() {
                 aria-label="Enquiry progress"
               >
                 <span
-                  className="block h-full rounded-full gradient-leaf transition-[width] duration-500 ease-out motion-reduce:transition-none"
+                  className="block h-full rounded-full gradient-orange transition-[width] duration-500 ease-out motion-reduce:transition-none"
                   style={{ width: `${pct}%` }}
                 />
               </div>
@@ -394,11 +408,11 @@ export default function LeadPopup() {
                         }}
                         className={`flex w-full items-start gap-3.5 rounded-2xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft ${
                           path === p.key
-                            ? "border-leaf bg-leaf-light/60"
-                            : "border-cream-deep bg-white hover:border-leaf/40"
+                            ? "border-orange bg-orange-light"
+                            : "border-cream-deep bg-white hover:border-orange/45"
                         }`}
                       >
-                        <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-leaf-light text-leaf-dark">
+                        <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-orange-light text-terracotta-dark">
                           <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none">
                             {p.icon}
                           </svg>
@@ -508,7 +522,7 @@ export default function LeadPopup() {
                   <button
                     onClick={step === TOTAL_STEPS ? submit : () => setStep((s) => s + 1)}
                     disabled={!canContinue || sending}
-                    className="rounded-full gradient-leaf px-7 py-3 text-sm font-semibold text-white shadow-soft transition-all hover:shadow-lift disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full gradient-orange px-7 py-3 text-sm font-semibold text-white shadow-soft transition-all hover:shadow-lift disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {step === TOTAL_STEPS ? (sending ? "Sending…" : "Submit") : "Continue"}
                   </button>
@@ -528,7 +542,7 @@ export default function LeadPopup() {
         {/* Close. Last in the DOM but positioned top-right, so the tab order
             reaches the questions before the way out of them. */}
         <button
-          onClick={() => close()}
+          onClick={close}
           aria-label="Close enquiry"
           className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-ink/10 bg-white/90 text-ink-soft shadow-soft transition-colors hover:border-ink/25 hover:text-ink"
         >
@@ -558,7 +572,7 @@ function PopField({
       </span>
       <input
         {...rest}
-        className="w-full rounded-xl border border-cream-deep bg-cream/40 px-3.5 py-2.5 text-[14px] text-ink outline-none transition-colors placeholder:text-ink-soft/45 focus:border-leaf focus:bg-white"
+        className="w-full rounded-xl border border-cream-deep bg-cream/40 px-3.5 py-2.5 text-[14px] text-ink outline-none transition-colors placeholder:text-ink-soft/45 focus:border-orange focus:bg-white"
       />
     </label>
   );
@@ -574,7 +588,7 @@ function PopSelect({
       <span className="mb-1.5 block text-[12px] font-semibold text-ink">{label}</span>
       <select
         {...rest}
-        className="w-full rounded-xl border border-cream-deep bg-cream/40 px-3.5 py-2.5 text-[14px] text-ink outline-none transition-colors focus:border-leaf focus:bg-white"
+        className="w-full rounded-xl border border-cream-deep bg-cream/40 px-3.5 py-2.5 text-[14px] text-ink outline-none transition-colors focus:border-orange focus:bg-white"
       >
         {children}
       </select>
